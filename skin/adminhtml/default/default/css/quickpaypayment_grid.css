@@ -1,0 +1,80 @@
+div.adminhtml-fraudprobability
+{
+  text-align: center;
+  vertical-align: middle;
+  position: relative;
+}
+
+div.adminhtml-fraudprobability img
+{
+  vertical-align: middle;
+}
+
+
+div#adminhtml-fraudprobability-info
+{
+  position: absolute;
+  background: #FDFAA4;
+  border: solid 1px #988753;
+  opacity: 1;
+  display: block;
+  min-width: 210px;
+  max-width: 500px;
+  min-height: 80px;
+  opacity: 0.9;
+  z-index: 9999;
+}
+
+div#adminhtml-fraudprobability-info span.arrow
+{
+  display: block;
+  width: 10px;
+  height: 20px;
+  background: url('../images/quickpaypayment/arrow.png');
+  position: absolute;
+  top: 50%;
+  margin-top: -10px;
+  margin-left: -10px;
+}
+
+
+
+div#adminhtml-fraudprobability-info span.wait
+{
+  display: block;
+  width: 35px;
+  height: 35px;
+  background: url('../images/quickpaypayment/preloader.gif');
+  position: absolute;
+  top: 50%;
+  left:50%;
+  margin-top: -18px;
+  margin-left: -18px;
+}
+
+
+div#adminhtml-fraudprobability-info div.content
+{
+  padding: 5px;
+  margin-bottom: 15px;
+}
+
+div#adminhtml-fraudprobability-info div.content span.info-from
+{
+  position: absolute;
+  bottom: 0px;
+  right: 5px;
+}
+
+div#adminhtml-fraudprobability-info div.content div.info-middle
+{
+  color: red;
+  text-align: center;
+  line-height: 50px;
+  font-weight: bold;
+}
+
+div#adminhtml-fraudprobability-info ul li.fraudprobability
+{
+  text-transform: capitalize;
+}

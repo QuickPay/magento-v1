@@ -1,0 +1,17 @@
+<?xml version="1.0"?>
+<layout version="0.1.0">
+    <default>
+        <reference name="head">
+              <action method="addItem"><type>js</type><name>quickpaypayment/jquery/jquery-1.8.3.min.js</name></action>
+              <action method="addItem"><type>js</type><name>quickpaypayment/jquery/jquery-no-conflict.js</name></action>
+              <action method="addItem"><type>js</type><name>quickpaypayment/quickpay/adminhtml/grid.js</name></action>
+              <action method="addItem"><type>skin_css</type><name>css/quickpaypayment_grid.css</name></action>
+        </reference>
+    </default>
+    
+    <adminhtml_sales_order_invoice_new>
+        <reference name="before_body_end">
+            <block type="quickpaypayment/adminhtml_invoice_finalize" template="quickpaypayment/adminhtml/invoice/finalize.phtml"/>
+        </reference>
+    </adminhtml_sales_order_invoice_new>
+</layout>

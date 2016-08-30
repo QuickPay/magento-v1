@@ -1,0 +1,341 @@
+<?php
+$payment = Mage::getModel('quickpaypayment/payment');
+?>
+<fieldset class="form-list">
+  <?php $_code = $this->getMethodCode() ?>
+  <ul id="payment_form_<?php echo $_code ?>" style="display:none">
+    <li>
+      <?php echo Mage::helper('quickpaypayment')->__('Du har valgt at betale for ordren online. Lige så snart du har gennemført din ordre, vil du blive overført til betalingssystemet. Her skal du gennemføre din betaling. Når betalingen er gennemført, vil du automatisk blive sendt tilbage til vores forretning.'); ?>
+
+
+
+      <?php if ((int)$payment->getConfigData('transactionfee') == 1) : ?>
+
+        <?php if ($payment->getConfigData('transactionfee')) : ?>
+          <br>
+          <br>
+          <b><?php echo Mage::helper('quickpaypayment')->__("Tranaktionsgebyr"); ?></b>
+          <br>
+          <?php echo Mage::helper('quickpaypayment')->__("Der vil blive opkrævet et transaktionsgebyr ved brug af denne betalingsmetode. Gebyr størrelsen afhænger af kortvalg og vil blive tilføjet ved betaling."); ?>
+          
+        <?php endif; ?>
+      <?php endif; ?>
+		
+	  <br/>
+	  <?php
+	  if ($payment->getConfigData('brandingidchecked')!='') {
+	  ?>
+	  <br/><input type="checkbox" name="quickpay_state[]" value="checkbox1"> <?php echo $this->__($payment->getConfigData('brandingidcheckedtext'));?><br/>
+	  <?php } ?>
+	  
+      <?php if ($payment->showTrustedList()) : ?>
+        <br>
+        <br>
+        <?php $logoArray = explode(',', $payment->getConfigData('trustedlogos')); ?>
+
+        <?php foreach ($logoArray as $item) : ?>
+          <?php
+          switch ($item) {
+            case 'verisign_secure':
+            {
+              ?><img src="<?php echo $this->getSkinUrl('images/quickpaypayment/verisign_secure.gif') ?>"
+                     border="0" />&nbsp;&nbsp;<?php
+              break;
+            }
+            case 'mastercard_securecode':
+            {
+              ?><img src="<?php echo $this->getSkinUrl('images/quickpaypayment/mastercard_securecode.gif') ?>"
+                     border="0" />&nbsp;&nbsp;<?php
+              break;
+            }
+            case 'pci':
+            {
+              ?><img src="<?php echo $this->getSkinUrl('images/quickpaypayment/pci.gif') ?>"
+                     border="0" />&nbsp;&nbsp;<?php
+              break;
+            }
+            case 'nets':
+            {
+              ?><img src="<?php echo $this->getSkinUrl('images/quickpaypayment/nets.png') ?>"
+                     border="0" />&nbsp;&nbsp;<?php
+              break;
+            }
+            case 'euroline':
+            {
+              ?><img src="<?php echo $this->getSkinUrl('images/quickpaypayment/euroline.gif') ?>"
+                     border="0" />&nbsp;&nbsp;<?php
+              break;
+            }
+          }
+          ?>
+        <?php endforeach; ?>
+      <?php endif; ?>
+
+      <?php if ($payment->showCardsList()) : ?>
+        <br>
+        <br>
+		<table cellspacing="0" cellpadding="0" border="0">
+        <?php echo Mage::helper('quickpaypayment')->__('Vælg venligst betaligsmetode:') ?>
+        <br>
+        
+        <?php 
+        	$logoArray = explode(',', $payment->getConfigData('specifikcardtypes')); 
+        	$firstItem = true;
+        ?>
+        
+        <?php foreach ($logoArray as $item) : 
+        	if ($firstItem) {
+        		$checkedHtml = "checked=\"checked\"";
+        		$firstItem = false;
+			} else {
+				$checkedHtml = "";
+			}
+        ?>
+          <?php switch ($item) {
+            case 'dankort':
+            {
+              ?>
+				<tr>
+					<td>
+						<input type="radio" class="radio" name="qpayment_type" value="dankort" <?php echo $checkedHtml;?>/>
+					</td>
+					<td>
+						<img src="<?php echo $this->getSkinUrl('images/quickpaypayment/dankort.png') ?>" border="0" title="Dankort" />
+					</td>
+				</tr>
+			<?php
+
+              break;
+            }
+            case 'edankort':
+            {
+              ?>
+			<tr>
+				<td>
+					<input type="radio" class="radio" name="qpayment_type" value="edankort" <?php echo $checkedHtml;?>/>
+				</td>
+				<td>
+					<img src="<?php echo $this->getSkinUrl('images/quickpaypayment/edankort.png') ?>" border="0" title="eDankort" />
+				</td>
+			</tr>
+				<?php
+              break;
+            }
+            case 'fbg1886':
+            {
+              ?>
+			<tr>
+				<td>
+					<input type="radio" class="radio" name="qpayment_type" value="fbg1886" <?php echo $checkedHtml;?>/>
+				</td>
+				<td>
+					<img src="<?php echo $this->getSkinUrl('images/quickpaypayment/forbrugsforeningen.png') ?>" border="0" title="Forbrugsforeningen" />
+				</td>
+			</tr>
+					<?php
+              break;
+            }
+            case 'visa':
+            {
+              ?>
+			<tr>
+				<td>
+					<input type="radio" class="radio" name="qpayment_type" value="visa" <?php echo $checkedHtml;?>/>
+				</td>
+				<td>
+					<img src="<?php echo $this->getSkinUrl('images/quickpaypayment/visa.png') ?>" border="0" title="VISA" />
+				</td>
+			</tr>
+					
+			<?php
+              break;
+            }
+            case 'visa-electron-dk':
+            {
+              ?>
+			<tr>
+				<td>
+					<input type="radio" class="radio" name="qpayment_type" value="visa-electron" <?php echo $checkedHtml;?>/>
+				</td>
+				<td>
+					<img src="<?php echo $this->getSkinUrl('images/quickpaypayment/visaelectron.png') ?>" border="0" title="VISA Electron" />
+				</td>
+			</tr>
+					<?php
+              break;
+            }
+			
+            case 'mastercard':
+            {
+              ?>
+			<tr>
+				<td>
+					<input type="radio" class="radio" name="qpayment_type" value="mastercard" <?php echo $checkedHtml;?>/>
+				</td>
+				<td>
+					<img src="<?php echo $this->getSkinUrl('images/quickpaypayment/mastercard.png') ?>" border="0" title="MasterCard" />
+				</td>
+			</tr>
+			
+			<?php
+              break;
+            }
+            case 'mastercard-debet-dk':
+            {
+              ?>
+			<tr>
+				<td>
+					<input type="radio" class="radio" name="qpayment_type" value="mastercard-debet" <?php echo $checkedHtml;?>/>
+				</td>
+				<td>
+					<img src="<?php echo $this->getSkinUrl('images/quickpaypayment/mastercarddebet.png') ?>" border="0" title="MasterCard Debet DK" />
+				</td>
+			</tr>
+			
+			<?php
+              break;
+            }
+            case 'maestro':
+            {
+              ?>
+			<tr>
+				<td>
+					<input type="radio" class="radio" name="qpayment_type" value="maestro" <?php echo $checkedHtml;?>/>
+				</td>
+				<td>
+					<img src="<?php echo $this->getSkinUrl('images/quickpaypayment/maestro.png') ?>" border="0" title="Maestro" />
+				</td>
+			</tr>
+			<?php
+              break;
+            }
+            case 'jcb':
+            {
+              ?>
+			<tr>
+				<td>
+					<input type="radio" class="radio" name="qpayment_type" value="jcb" <?php echo $checkedHtml;?>/>
+				</td>
+				<td>
+					<img src="<?php echo $this->getSkinUrl('images/quickpaypayment/jcb.png') ?>" border="0" title="JCB" />
+				</td>
+			</tr>
+					
+			<?php
+              break;
+            }
+            case 'diners':
+            {
+              ?>
+			<tr>
+				<td>
+					<input type="radio" class="radio" name="qpayment_type" value="diners" <?php echo $checkedHtml;?>/>
+				</td>
+				<td>
+					<img src="<?php echo $this->getSkinUrl('images/quickpaypayment/diners.png') ?>" border="0" title="Diners Club" />
+				</td>
+			</tr>
+			<?php
+              break;
+            }
+            case 'american-express'://'amex':
+            {
+              ?>
+			<tr>
+				<td>
+					<input type="radio" class="radio" name="qpayment_type" value="amex" <?php echo $checkedHtml;?>/>
+				</td>
+				<td>
+					<img src="<?php echo $this->getSkinUrl('images/quickpaypayment/amex.png') ?>" border="0" title="AMEX" />
+				</td>
+			</tr>
+					
+			<?php
+              break;
+            }
+            case 'sofort':
+            {
+              ?>
+			<tr>
+				<td>
+					<input type="radio" class="radio" name="qpayment_type" value="sofort" <?php echo $checkedHtml;?>/>
+				</td>
+				<td>
+					<img src="<?php echo $this->getSkinUrl('images/quickpaypayment/sofort.png') ?>" border="0" title="Sofort" />
+				</td>
+			</tr>
+					
+			<?php
+              break;
+            }
+            
+            case 'viabill':
+            {
+              ?>
+			<tr>
+				<td>
+					<input type="radio" class="radio" name="qpayment_type" value="viabill" <?php echo $checkedHtml;?>/>
+				</td>
+				<td>
+					<img src="<?php echo $this->getSkinUrl('images/quickpaypayment/viabill.png') ?>" border="0" title="ViaBill" />
+				</td>
+			</tr>
+					
+			<?php
+              break;
+            }
+            case 'paypal':
+            {
+              ?>
+			<tr>
+				<td>
+					<input type="radio" class="radio" name="qpayment_type" value="paypal" <?php echo $checkedHtml;?>/>
+				</td>
+				<td>
+					<img src="<?php echo $this->getSkinUrl('images/quickpaypayment/paypal.png') ?>" border="0" title="Paypal" />
+				</td>
+			</tr>
+					
+			<?php
+              break;
+            }
+            case 'paii':
+            {
+              ?>
+			<tr>
+				<td>
+					<input type="radio" class="radio" name="qpayment_type" value="paii" <?php echo $checkedHtml;?>/>
+				</td>
+				<td>
+					<img src="<?php echo $this->getSkinUrl('images/quickpaypayment/paii.png') ?>" border="0" title="Paii" />
+				</td>
+			</tr>
+					
+			<?php
+              break;
+            }
+            case 'mobilepay':
+            {
+              ?>
+			<tr>
+				<td>
+					<input type="radio" class="radio" name="qpayment_type" value="mobilepay" <?php echo $checkedHtml;?>/>
+				</td>
+				<td>
+					<img src="<?php echo $this->getSkinUrl('images/quickpaypayment/mobilepay.png') ?>" border="0" title="MobilePay" />
+				</td>
+			</tr>
+				
+			
+			<?php
+              break;
+            }
+            
+          }
+          ?>
+        <?php endforeach; ?>
+		</table>
+      <?php endif; ?>
+    </li>
+  </ul>
+</fieldset>

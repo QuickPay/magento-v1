@@ -1,0 +1,11 @@
+<?xml version="1.0"?>
+
+<layout version="0.1.0">
+
+    <quickpaypayment_redirect>
+        <reference name="content">
+            <block type="page/html" name="redirect" template="quickpaypayment/payment/redirect.phtml"></block>
+        </reference>
+    </quickpaypayment_redirect>
+
+</layout>

@@ -1,0 +1,109 @@
+<?php
+/* version of protocol: 7 */
+/* doc http://quickpay.net/features/v7/form_v7.pdf */
+/* Upgraded to version 10 of protocol */
+
+$payment = Mage::getModel('quickpaypayment/payment');
+
+$order = Mage::getModel('sales/order');
+$order->loadByIncrementId($payment->getCheckout()->getLastRealOrderId());
+
+
+// CACHE BLOCK HTML OUTPUT DISABLE HACK --> START
+$success = explode("?", Mage::getUrl('quickpaypayment/payment/success')); // Removes wierd cache url attachment ?SID_U
+$redirect = explode("?", Mage::getUrl('quickpaypayment/payment/cancel')); // Removes wierd cache url attachment ?SID_U
+$callback = explode("?", Mage::getUrl('quickpaypayment/payment/callback')); // Removes wierd cache url attachment ?SID_U
+// CACHE BLOCK HTML OUTPUT DISABLE HACK --> END
+
+
+//3D secure kort.
+$secure3DCards = array(
+  'creditcard',
+  'jcb',
+  'maestro',
+  'maestro-dk',
+  'mastercard',
+  'mastercard-dk',
+  'mastercard-debet-dk',
+  'visa',
+  'visa-dk',
+  'visa-electron',
+  'visa-electron-dk',
+);
+$use3dSecure = ($payment->getConfigData('use3dsecure') == 1) ? true : false;
+
+$cardlocktype = "";
+
+if ($payment->getConfigData('cardtype') == 'specific-cards') {
+  $specificcards = explode(",", $payment->getConfigData('specifikcardtypes'));
+  foreach ($specificcards as $card) {
+    if ($use3dSecure && in_array($card, $secure3DCards)) {
+      $cardlocktype .= "3d-" . $card;
+    } else {
+      $cardlocktype .= $card;
+    }
+    $cardlocktype .= ",";
+  }
+} elseif ($payment->getConfigData('cardtype') == 'creditcard') {
+  if ($use3dSecure) {
+    $cardlocktype .= "3d-creditcard";
+  } else {
+    $cardlocktype .= 'creditcard';
+  }
+}
+$cardlocktype = rtrim($cardlocktype, ",");
+
+$_protocolVersion = 7;
+
+
+$md5string =
+  //protocol
+  $_protocolVersion .
+  //msgtype
+  'authorize' .
+  //merchant
+  $payment->getConfigData("merchantnumber") .
+  //language
+  $payment->calcLanguage(Mage::app()->getLocale()->getLocaleCode()) .
+  //ordernumber
+  $payment->getCheckout()->getLastRealOrderId() .
+  //amount
+  ($order->getTotalDue() * 100) .
+  //currency
+  $order->getOrderCurrency()->ToString() .
+  //continueurl
+  $success[0] .
+  //cancelurl
+  $redirect[0] .
+  //callbackurl
+  $callback[0] .
+  //autocapture
+  $payment->getConfigData('instantcapture') .
+  //cardtypelock
+  $cardlocktype .
+  //secret
+  $payment->getConfigData("md5secret");
+
+?>
+
+  <form id="quickpaypayment" action="<?php echo $payment->getConfigData('post_url'); ?>" method="post">
+    <input type="hidden" name="protocol" value="<?php echo $_protocolVersion ?>">
+    <input type="hidden" name="msgtype" value="authorize">
+    <input type="hidden" name="merchant" value="<?php echo $payment->getConfigData("merchantnumber") ?>">
+    <input type="hidden" name="language" value="<?php echo $payment->calcLanguage(Mage::app()->getLocale()->getLocaleCode()) ?>">
+    <input type="hidden" name="ordernumber" value="<?php echo $payment->getCheckout()->getLastRealOrderId() ?>">
+    <input type="hidden" name="amount" value="<?php echo $order->getTotalDue() * 100 ?>">
+    <input type="hidden" name="currency" value="<?php echo $order->getOrderCurrency()->ToString() ?>">
+    <input type="hidden" name="continueurl" value="<?php echo Mage::getUrl('quickpaypayment/payment/success') ?>">
+    <input type="hidden" name="cancelurl" value="<?php echo Mage::getUrl('quickpaypayment/payment/cancel') ?>">
+    <input type="hidden" name="callbackurl" value="<?php echo Mage::getUrl('quickpaypayment/payment/callback') ?>">
+    <input type="hidden" name="autocapture" value="<?php echo $payment->getConfigData('instantcapture') ?>">
+    <input type="hidden" name="cardtypelock" value="<?php echo $cardlocktype; ?>">
+    <input type="hidden" name="md5check" value="<?php echo md5($md5string) ?>">
+  </form>
+
+  <script type="text/JavaScript">
+    document.getElementById('quickpaypayment').submit();
+  </script>
+
+<?php exit(); ?>

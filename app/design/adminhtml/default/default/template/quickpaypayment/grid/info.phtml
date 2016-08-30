@@ -1,0 +1,32 @@
+<!--#access-validate#-->
+
+<?php if($this->getInfoType() == 'normal'): ?>
+  <ul>
+    <?php foreach($this->getFields() as $key => $field): ?>
+      <li class="<?php echo $key ?>">
+        <strong>
+          <?php echo $this->__($field['key']) . "<br/>" ?>
+        </strong>
+        <?php if($field['value']): ?>
+          <?php echo $this->__($field['value']) ?>
+        <?php else: ?>
+          <?php echo $this->__('no data') ?>
+        <?php endif ?>
+      </li>
+    <?php endforeach ?>
+  </ul>
+<?php elseif($this->getInfoType() == 'no_cart'): ?>
+  <div class="info-middle">
+    <?php echo $this->__("This order don't contain any credit card number") ?>
+  </div>
+<?php elseif($this->getInfoType() == 'sent'): ?>
+  <div class="info-middle">
+    <?php echo $this->__('Information has been sent for processing') ?>
+  </div>
+<?php else: ?>
+  <div class="info-middle">
+    <?php echo $this->__("This order don't contain any credit card number") ?>
+  </div>
+<?php endif ?>
+
+<span class="info-from"><i><?php echo $this->__('Fraud report delivered by QuickPay') ?></i></span>
