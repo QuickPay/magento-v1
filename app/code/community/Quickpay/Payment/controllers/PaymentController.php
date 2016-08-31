@@ -4,7 +4,7 @@ class Quickpay_Payment_PaymentController extends Mage_Core_Controller_Front_Acti
 	protected $_callbackAction = false;
 
 	protected function _expireAjax() {
-		if (!Mage::getSingleton('checkout/session')->getQuote()->hasItems()) {
+		if (! $this->_getSession()->getQuote()->hasItems()) {
 			$this->getResponse()->setHeader('HTTP/1.1', '403 Session Expired');
 			exit ;
 		}
@@ -15,11 +15,15 @@ class Quickpay_Payment_PaymentController extends Mage_Core_Controller_Front_Acti
 	}
 
 	public function redirectAction() {
-		$incrementId = Mage::getSingleton('checkout/session')->getLastRealOrderId();
+		$session = $this->_getSession();
+
+		$incrementId = $session->getLastRealOrderId();
 
 		if ($incrementId === null) {
 			throw new Exception('No order increment id registered.');
 		}
+
+		$session->setQuickpayQuoteId($session->getQuoteId());
 
 		$order = Mage::getModel('sales/order')->loadByIncrementId($incrementId);
 
@@ -28,15 +32,29 @@ class Quickpay_Payment_PaymentController extends Mage_Core_Controller_Front_Acti
 		$order->save();
 
 		$block = Mage::getSingleton('core/layout')->createBlock('quickpaypayment/payment_redirect');
-		$block->toHTML();
+		$block->toHtml();
+
+		$session->unsQuoteId();
+		$session->unsRedirectUrl();
 	}
 
 	public function cancelAction() {
+		$session = $this->_getSession();
+		$session->setQuoteId($session->getQuickpayQuoteId(true));
+		if ($session->getLastRealOrderId()) {
+			$order = Mage::getModel('sales/order')->loadByIncrementId($session->getLastRealOrderId());
+			if ($order->getId()) {
+				$order->cancel()->save();
+			}
+
+			Mage::helper('quickpaypayment/checkout')->restoreQuote();
+		}
+
 		$this->_redirect('checkout/cart');
 	}
 
 	public function successAction() {
-		$order = Mage::getModel('sales/order')->loadByIncrementId(Mage::getSingleton('checkout/session')->getLastRealOrderId());
+		$order = Mage::getModel('sales/order')->loadByIncrementId($this->_getSession()->getLastRealOrderId());
 
 		$payment = Mage::getModel('quickpaypayment/payment');
 		// might be it's already set by the callback-action
@@ -79,7 +97,7 @@ class Quickpay_Payment_PaymentController extends Mage_Core_Controller_Front_Acti
 		$requestBody = file_get_contents("php://input");
 		$request = json_decode($requestBody);
 		Mage::log($request, null, 'qp_callback.log');
-		$session = Mage::getSingleton('checkout/session');
+		$session = $this->_getSession();
 		$payment = Mage::getModel('quickpaypayment/payment');
 		$key = $payment->getConfigData('privatekey');
 		$checksum = hash_hmac("sha256", $requestBody, $key);
@@ -94,8 +112,8 @@ class Quickpay_Payment_PaymentController extends Mage_Core_Controller_Front_Acti
 			// IMPORTANT to update the status as 1 to ensure that the stock is handled correctly!
 			if (($request->accepted && $operation->type == 'authorize' && $operation->qp_status_code == "20000") || ($operation->type == 'authorize' && $operation->qp_status_code == "20200" && $operation->pending == TRUE)) {
 				if ($operation->pending == TRUE) {
-					Mage::log('Transaction accepted but pending', null, 'qp_callback.log');						
-				} else {	
+					Mage::log('Transaction accepted but pending', null, 'qp_callback.log');
+				} else {
 					Mage::log('Transaction accepted', null, 'qp_callback.log');
 				}
 				if ((int)$payment->getConfigData('transactionfee') == 1) {
@@ -228,6 +246,16 @@ class Quickpay_Payment_PaymentController extends Mage_Core_Controller_Front_Acti
 
 			$order->setData('email_sent', 1)->save();
 		}
+	}
+
+    /**
+     * Retrieve checkout session
+     *
+     * @return Mage_Checkout_Model_Session
+     */
+	protected function _getSession()
+	{
+		return Mage::getSingleton('checkout/session');
 	}
 
 }
