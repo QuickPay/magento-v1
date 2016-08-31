@@ -4,13 +4,13 @@ class Quickpay_Payment_Model_Observer
    public function autoRegisterState(Varien_Event_Observer $observer) {
 	$data = $observer->getEvent()->getControllerAction()->getRequest()->getPost();
 	if (isset($data['quickpay_state'])) {
-	  Mage::getSingleton('core/session')->setQuickpayState($data['quickpay_state']); // Branding	   
+	  Mage::getSingleton('core/session')->setQuickpayState($data['quickpay_state']); // Branding
 	}
 	Mage::getSingleton('core/session')->setQPayment($data['qpayment_type']); // Payment type selection
 	return $this;
    }
 
-	
+
     public function capture($observer)
     {
 
@@ -36,7 +36,7 @@ class Quickpay_Payment_Model_Observer
                 throw new Exception(Mage::helper('quickpaypayment')->__('Max beløb der kan refunderes'));
             }
         } catch (Exception $e) {
-           
+
             Mage::throwException(Mage::helper('quickpaypayment')->__('Ikke muligt at hæve betalingen online, grundet denne fejl: %s',$e->getMessage()));
             //throw new Exception("Failed to create Invoice on online capture");
         }
@@ -64,14 +64,14 @@ class Quickpay_Payment_Model_Observer
         try {
             $creditmemo = $observer->getEvent()->getCreditmemo();
             $refundtotal = $creditmemo->getGrandTotal();
-			
+
 	    // Ignore refund if done in 5 seconds with same amount
 	    // This makes the refund behave well, if a messy extension fires the sales_order_creditmemo_refund event twice or more
 	    $previousCall = $session->getTimeAndAmount();
 	    $nowCall = array('time' => time(),'amount' => $refundtotal);
 	    $session->setTimeAndAmount($nowCall);
 	    if(count($previousCall) > 0){
-		    
+
 		    $timeSpacing = $nowCall['time'] - $previousCall['time'];
 		    $amountSpacing = $previousCall['amount'] - $nowCall['amount'];
 	    }
@@ -81,7 +81,7 @@ class Quickpay_Payment_Model_Observer
 			    $ignoreRefund = false;
 		    }
 	    }
-			
+
             $order = Mage::getModel('sales/order')->load($creditmemo->getOrderId());
             $payment_method_code = $order->getPayment()->getMethodInstance()->getCode();
 
@@ -184,12 +184,12 @@ class Quickpay_Payment_Model_Observer
         return $this;
     }
 
-
-    /*
-     * Add new field to the grid
-     * */
-
-
+    /**
+     * Add fraud probability to order grid
+     *
+     * @param  Varien_Event_Observer $observer
+     * @return $this
+     */
     public function onBlockHtmlBefore(Varien_Event_Observer $observer)
     {
         $block = $observer->getBlock();
@@ -200,15 +200,16 @@ class Quickpay_Payment_Model_Observer
 
                 /* @var $block Mage_Adminhtml_Block_Sales_Order_Grid */
                 $block->addColumnAfter('fraudprobability', array(
-                    'header' => '',
-                    'index' => 'fraudprobability',
-                    'type' => 'action',
-                    'filter' => false,
+                    'header'   => '',
+                    'index'    => 'fraudprobability',
+                    'type'     => 'action',
+                    'filter'   => false,
                     'sortable' => false,
-                    'width' => '40px',
-                    'weight' => '100',
+                    'width'    => '40px',
+                    'weight'   => '100',
                     'renderer' => 'Quickpay_Payment_Model_Sales_Order_Grid_Fraudprobability',
                 ), 'status');
+
                 // order columns
                 $block->addColumnsOrder('fraudprobability', 'massaction')->sortColumnsByOrder();
                 $block->addColumnsOrder('massaction', 'fraudprobability')->sortColumnsByOrder();

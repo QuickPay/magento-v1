@@ -4,6 +4,11 @@
         <Quickpay_Payment>
             <active>true</active>
             <codePool>community</codePool>
+            <depends>
+                <Mage_Paygate/>
+                <Mage_Sales/>
+                <Mage_Checkout/>
+            </depends>
         </Quickpay_Payment>
-	</modules>
+    </modules>
 </config>

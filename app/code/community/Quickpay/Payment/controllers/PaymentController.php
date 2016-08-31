@@ -1,20 +1,24 @@
 <?php
-class Quickpay_Payment_PaymentController extends Mage_Core_Controller_Front_Action {
+class Quickpay_Payment_PaymentController extends Mage_Core_Controller_Front_Action
+{
 	// Flag only used for callback
 	protected $_callbackAction = false;
 
-	protected function _expireAjax() {
+	protected function _expireAjax()
+	{
 		if (! $this->_getSession()->getQuote()->hasItems()) {
 			$this->getResponse()->setHeader('HTTP/1.1', '403 Session Expired');
 			exit ;
 		}
 	}
 
-	public function getPayment() {
+	public function getPayment()
+	{
 		return Mage::getSingleton('quickpaypayment/payment');
 	}
 
-	public function redirectAction() {
+	public function redirectAction()
+	{
 		$session = $this->_getSession();
 
 		$incrementId = $session->getLastRealOrderId();
@@ -23,6 +27,7 @@ class Quickpay_Payment_PaymentController extends Mage_Core_Controller_Front_Acti
 			throw new Exception('No order increment id registered.');
 		}
 
+		//Save quote id in session for retrieval later
 		$session->setQuickpayQuoteId($session->getQuoteId());
 
 		$order = Mage::getModel('sales/order')->loadByIncrementId($incrementId);
@@ -38,7 +43,9 @@ class Quickpay_Payment_PaymentController extends Mage_Core_Controller_Front_Acti
 		$session->unsRedirectUrl();
 	}
 
-	public function cancelAction() {
+	public function cancelAction()
+	{
+		//Read quote id from session and attempt to restore
 		$session = $this->_getSession();
 		$session->setQuoteId($session->getQuickpayQuoteId(true));
 		if ($session->getLastRealOrderId()) {
@@ -53,7 +60,8 @@ class Quickpay_Payment_PaymentController extends Mage_Core_Controller_Front_Acti
 		$this->_redirect('checkout/cart');
 	}
 
-	public function successAction() {
+	public function successAction()
+	{
 		$order = Mage::getModel('sales/order')->loadByIncrementId($this->_getSession()->getLastRealOrderId());
 
 		$payment = Mage::getModel('quickpaypayment/payment');
@@ -92,7 +100,8 @@ class Quickpay_Payment_PaymentController extends Mage_Core_Controller_Front_Acti
 		$this->_redirect('checkout/onepage/success');
 	}
 
-	public function callbackAction() {
+	public function callbackAction()
+	{
 		Mage::log("Logging callback data", null, 'qp_callback.log');
 		$requestBody = file_get_contents("php://input");
 		$request = json_decode($requestBody);
@@ -199,7 +208,8 @@ class Quickpay_Payment_PaymentController extends Mage_Core_Controller_Front_Acti
 	/**
 	 * Send an email to the customer
 	 */
-	protected function sendEmail($order) {
+	protected function sendEmail($order)
+	{
 		$storeId = $order->getStoreId();
 		$email = $order->getData('customer_email');
 

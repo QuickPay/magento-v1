@@ -1,19 +1,9 @@
 <?php
 /* Upgraded to version 10 of protocol */
-
 $payment = Mage::getModel('quickpaypayment/payment');
 
 $order = Mage::getModel('sales/order');
 $order->loadByIncrementId($payment->getCheckout()->getLastRealOrderId());
-
-// CACHE BLOCK HTML OUTPUT DISABLE HACK --> START
-$success = explode("?", Mage::getUrl('quickpaypayment/payment/success'));
-// Removes wierd cache url attachment ?SID_U
-$redirect = explode("?", Mage::getUrl('quickpaypayment/payment/cancel'));
-// Removes wierd cache url attachment ?SID_U
-$callback = explode("?", Mage::getUrl('quickpaypayment/payment/callback'));
-// Removes wierd cache url attachment ?SID_U
-// CACHE BLOCK HTML OUTPUT DISABLE HACK --> END
 
 //3D secure kort.
 $secure3DCards = array('creditcard', 'jcb', 'maestro', 'maestro-dk', 'mastercard', 'mastercard-dk', 'mastercard-debet-dk', 'visa', 'visa-dk', 'visa-electron', 'visa-electron-dk', );
@@ -58,10 +48,20 @@ if (method_exists($order, "getCustomerEmail")) {
 	$customerEmail = $order->getCustomerEmail();
 }
 
-$parameters = array("agreement_id" => $payment->getConfigData("agreementid"), "amount" => $order->getTotalDue() * 100, "continueurl" => Mage::getUrl('quickpaypayment/payment/success'), "cancelurl" => Mage::getUrl('quickpaypayment/payment/cancel'), "callbackurl" => Mage::getUrl('quickpaypayment/payment/callback'), "language" => $payment->calcLanguage(Mage::app()->getLocale()->getLocaleCode()), "autocapture" => $payment->getConfigData('instantcapture'), "autofee" => $payment->getConfigData('transactionfee'), "payment_methods" => $qpayment, "branding_id" => $brandingId, "google_analytics_tracking_id" => $payment->getConfigData('googleanalyticstracking'), "google_analytics_client_id" => $payment->getConfigData('googleanalyticsclientid'), "customer_email" => $customerEmail
-// framed
-// deadline
-// acquirer
+$parameters = array(
+    "agreement_id"                 => $payment->getConfigData("agreementid"),
+    "amount"                       => $order->getTotalDue() * 100,
+    "continueurl"                  => Mage::getUrl('quickpaypayment/payment/success'),
+    "cancelurl"                    => Mage::getUrl('quickpaypayment/payment/cancel'),
+    "callbackurl"                  => Mage::getUrl('quickpaypayment/payment/callback'),
+    "language"                     => $payment->calcLanguage(Mage::app()->getLocale()->getLocaleCode()),
+    "autocapture"                  => $payment->getConfigData('instantcapture'),
+    "autofee"                      => $payment->getConfigData('transactionfee'),
+    "payment_methods"              => $qpayment,
+    "branding_id"                  => $brandingId,
+    "google_analytics_tracking_id" => $payment->getConfigData('googleanalyticstracking'),
+    "google_analytics_client_id"   => $payment->getConfigData('googleanalyticsclientid'),
+    "customer_email"               => $customerEmail
 );
 
 $orderNumber = $payment->getCheckout()->getLastRealOrderId();
@@ -74,6 +74,6 @@ $paymentUrl = $result->url;
 ?>
 
 <script type="text/JavaScript">
-		window.location.href = "<?php echo $paymentUrl; ?>";</script>
-
+    window.location.href = "<?php echo $paymentUrl; ?>";
+</script>
 <?php exit(); ?>

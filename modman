@@ -10,4 +10,3 @@ js/quickpaypayment/*                                               js/quickpaypa
 skin/frontend/base/default/images/quickpaypayment/*                skin/frontend/base/default/images/quickpaypayment/
 skin/adminhtml/default/default/images/quickpaypayment/*            skin/adminhtml/default/default/images/quickpaypayment/
 skin/adminhtml/default/default/css/*                               skin/adminhtml/default/default/css/
-Quickpay_Payment.xml                                               var/package/
