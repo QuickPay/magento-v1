@@ -181,6 +181,7 @@
                 <model>quickpaypayment/payment</model>
                 <title>Quickpay Kortbetaling</title>
                 <active>1</active>
+                <testmode>0</testmode>
                 <sort_order>1</sort_order>
                 <merchantnumber>ENTER YOUR MERCHANTNUMBER HERE</merchantnumber>
                 <agreementid>ENTER YOUR AGREEMENT ID HERE</agreementid>

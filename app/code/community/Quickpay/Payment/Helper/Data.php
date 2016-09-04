@@ -269,7 +269,7 @@ class Quickpay_Payment_Helper_Data extends Mage_Core_Helper_Abstract
         $qpOrderStatus = $connection->fetchAll("SELECT * FROM $table WHERE ordernum=" . $orderid[0]);
         $qpOrderStatus = $qpOrderStatus[0];
 
-        $this->apiKey = Mage::getStoreConfig('payment/quickpaypayment_payment/apikey', $storeId);
+        $this->apiKey = Mage::getStoreConfig('payment/quickpaypayment_payment/apikey');
 
         $msg = Array('protocol' => 7, 'msgtype' => 'cancel', 'merchant' => $merchant, 'transaction' => $qpOrderStatus['transaction'], );
         $msg['md5check'] = md5($msg['protocol'] . $msg['msgtype'] . $msg['merchant'] . $msg['transaction'] . $qpmd5);
