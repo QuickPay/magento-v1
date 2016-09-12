@@ -170,14 +170,6 @@ class Quickpay_Payment_Helper_Data extends Mage_Core_Helper_Abstract
         if ((int)($amount * 100) <= ((int)$qpOrderStatus['amount'] - (int)$capturedAmount)) {
             $this->apiKey = Mage::getStoreConfig('payment/quickpaypayment_payment/apikey', $storeId);
 
-            if ($order->getTotalDue() == $amount || $qpOrderStatus['cardtype'] != 'dankort' || $finalize) {
-                $msg['finalize'] = 1;
-            } else {
-                $msg['finalize'] = 0;
-            }
-
-            Mage::log($msg, null, 'qp_capture.log');
-
             $newCapturedAmount = $capturedAmount + ($amount * 100);
             try {
                 $result = $this->qpCapture($quickPayTransactionId, round($amount * 100));
@@ -226,7 +218,7 @@ class Quickpay_Payment_Helper_Data extends Mage_Core_Helper_Abstract
         }
 
         if (($refundtotal * 100) <= $qpOrderStatus['capturedAmount']) {
-            Mage::log($msg, null, 'qp_refund.log');
+
             $errorMessage = "";
             try {
                 $result = $this->qpRefund($qpOrderStatus['transaction'], round($refundtotal * 100));
@@ -270,9 +262,6 @@ class Quickpay_Payment_Helper_Data extends Mage_Core_Helper_Abstract
         $qpOrderStatus = $qpOrderStatus[0];
 
         $this->apiKey = Mage::getStoreConfig('payment/quickpaypayment_payment/apikey');
-
-        $msg = Array('protocol' => 7, 'msgtype' => 'cancel', 'merchant' => $merchant, 'transaction' => $qpOrderStatus['transaction'], );
-        $msg['md5check'] = md5($msg['protocol'] . $msg['msgtype'] . $msg['merchant'] . $msg['transaction'] . $qpmd5);
 
         $errorMessage = "";
         try {

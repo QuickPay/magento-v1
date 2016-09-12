@@ -5,47 +5,13 @@ $payment = Mage::getModel('quickpaypayment/payment');
 $order = Mage::getModel('sales/order');
 $order->loadByIncrementId($payment->getCheckout()->getLastRealOrderId());
 
-//3D secure kort.
-$secure3DCards = array('creditcard', 'jcb', 'maestro', 'maestro-dk', 'mastercard', 'mastercard-dk', 'mastercard-debet-dk', 'visa', 'visa-dk', 'visa-electron', 'visa-electron-dk', );
-$use3dSecure = ($payment->getConfigData('use3dsecure') == 1) ? true : false;
-
-$cardlocktype = "";
-
-if ($payment->getConfigData('cardtype') == 'specific-cards') {
-	$specificcards = explode(",", $payment->getConfigData('specifikcardtypes'));
-	foreach ($specificcards as $card) {
-		if ($use3dSecure && in_array($card, $secure3DCards)) {
-			$cardlocktype .= "3d-" . $card;
-		} else {
-			$cardlocktype .= $card;
-		}
-		$cardlocktype .= ",";
-	}
-} elseif ($payment->getConfigData('cardtype') == 'creditcard') {
-	if ($use3dSecure) {
-		$cardlocktype .= "3d-creditcard";
-	} else {
-		$cardlocktype .= 'creditcard';
-	}
-}
-$cardlocktype = rtrim($cardlocktype, ",");
-
-$protocolVersion = 'v10';
-
 $quickpay_state = Mage::getSingleton('core/session')->getQuickpayState();
 
 // Get array of selections
 if (isset($quickpay_state[0]) && $quickpay_state[0] == 'checkbox1') {
-	$brandingId = $payment->getConfigData('brandingidchecked');
+    $brandingId = $payment->getConfigData('brandingidchecked');
 } else {
-	$brandingId = $payment->getConfigData('brandingid');
-}
-
-$qpayment = Mage::getSingleton('core/session')->getQPayment();
-
-$customerEmail = "";
-if (method_exists($order, "getCustomerEmail")) {
-	$customerEmail = $order->getCustomerEmail();
+    $brandingId = $payment->getConfigData('brandingid');
 }
 
 $parameters = array(
@@ -57,11 +23,11 @@ $parameters = array(
     "language"                     => $payment->calcLanguage(Mage::app()->getLocale()->getLocaleCode()),
     "autocapture"                  => $payment->getConfigData('instantcapture'),
     "autofee"                      => $payment->getConfigData('transactionfee'),
-    "payment_methods"              => $qpayment,
+    "payment_methods"              => $order->getPayment()->getMethodInstance()->getPaymentMethods(),
     "branding_id"                  => $brandingId,
     "google_analytics_tracking_id" => $payment->getConfigData('googleanalyticstracking'),
     "google_analytics_client_id"   => $payment->getConfigData('googleanalyticsclientid'),
-    "customer_email"               => $customerEmail
+    "customer_email"               => $order->getCustomerEmail() ?: '',
 );
 
 $orderNumber = $payment->getCheckout()->getLastRealOrderId();
@@ -72,7 +38,6 @@ $result = Mage::helper('quickpaypayment')->qpCreatePaymentLink($result->id, $par
 
 $paymentUrl = $result->url;
 ?>
-
 <script type="text/JavaScript">
     window.location.href = "<?php echo $paymentUrl; ?>";
 </script>

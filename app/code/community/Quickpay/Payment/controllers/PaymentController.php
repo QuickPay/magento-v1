@@ -21,7 +21,7 @@ class Quickpay_Payment_PaymentController extends Mage_Core_Controller_Front_Acti
         $incrementId = $session->getLastRealOrderId();
 
         if ($incrementId === null) {
-            throw new Exception('No order increment id registered.');
+            Mage::throwException('No order increment id registered.');
         }
 
         //Save quote id in session for retrieval later

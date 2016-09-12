@@ -2,7 +2,7 @@
 <config>
     <modules>
         <Quickpay_Payment>
-            <version>3.1.30</version>
+            <version>3.2.0</version>
         </Quickpay_Payment>
     </modules>
     <global>
@@ -179,7 +179,7 @@
         <payment>
             <quickpaypayment_payment>
                 <model>quickpaypayment/payment</model>
-                <title>Quickpay Kortbetaling</title>
+                <title>QuickPay Kortbetaling</title>
                 <active>1</active>
                 <testmode>0</testmode>
                 <sort_order>1</sort_order>
@@ -205,6 +205,13 @@
                 <transactionfee>0</transactionfee>
                 <specifytransactionfee>0</specifytransactionfee>
             </quickpaypayment_payment>
+            <quickpay_viabill>
+                <active>0</active>
+                <model>quickpaypayment/method_viabill</model>
+                <order_status>pending</order_status>
+                <title>QuickPay ViaBill</title>
+                <allowspecific>0</allowspecific>
+            </quickpay_viabill>
         </payment>
         <web>
             <session>

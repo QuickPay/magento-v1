@@ -1,9 +1,6 @@
 <?php
 class Quickpay_Payment_Model_Payment extends Mage_Payment_Model_Method_Abstract
 {
-    const PAYMENT_TYPE_AUTH = 'AUTHORIZATION';
-    const PAYMENT_TYPE_SALE = 'SALE';
-
     protected $_code = 'quickpaypayment_payment';
     protected $_formBlockType = 'quickpaypayment/payment_form';
     protected $_infoBlockType = 'quickpaypayment/info_quickpay';
@@ -187,5 +184,10 @@ class Quickpay_Payment_Model_Payment extends Mage_Payment_Model_Method_Abstract
         }
 
         return $this->getConfigData('title');
+    }
+
+    public function getPaymentMethods()
+    {
+        return Mage::getSingleton('core/session')->getQPayment();
     }
 }
