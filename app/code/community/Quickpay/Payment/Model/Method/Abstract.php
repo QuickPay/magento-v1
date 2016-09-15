@@ -168,4 +168,36 @@ abstract class Quickpay_Payment_Model_Method_Abstract extends Mage_Payment_Model
 
         return $this->getConfigData('title');
     }
+
+    /**
+     * Retrieve information from payment configuration with fallback for unspecified values
+     *
+     * @param string $field
+     * @param int|string|null|Mage_Core_Model_Store $storeId
+     *
+     * @return mixed
+     */
+    public function getConfigData($field, $storeId = null)
+    {
+        if (null === $storeId) {
+            $storeId = $this->getStore();
+        }
+        $path = 'payment/'.$this->getCode().'/'.$field;
+
+        if (Mage::getStoreConfig($path, $storeId) === null) {
+            $path = 'payment/quickpaypayment_payment/'.$field;
+        }
+
+        return Mage::getStoreConfig($path, $storeId);
+    }
+
+    /**
+     * Get instructions text from config
+     *
+     * @return string
+     */
+    public function getInstructions()
+    {
+        return trim($this->getConfigData('instructions'));
+    }
 }

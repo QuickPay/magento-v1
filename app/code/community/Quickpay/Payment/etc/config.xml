@@ -213,7 +213,16 @@
                 <order_status>pending</order_status>
                 <title>QuickPay ViaBill</title>
                 <allowspecific>0</allowspecific>
+                <instructions>Pay with ViaBill</instructions>
             </quickpay_viabill>
+            <quickpay_mobilepay>
+                <active>0</active>
+                <model>quickpaypayment/method_mobilepay</model>
+                <order_status>pending</order_status>
+                <title>QuickPay MobilePay</title>
+                <allowspecific>0</allowspecific>
+                <instructions>Pay with MobilePay</instructions>
+            </quickpay_mobilepay>
         </payment>
         <web>
             <session>
