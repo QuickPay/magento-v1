@@ -178,10 +178,12 @@
     <default>
         <payment>
             <quickpaypayment_payment>
-                <model>quickpaypayment/payment</model>
+                <model>quickpaypayment/method_quickpay</model>
                 <title>QuickPay Kortbetaling</title>
                 <active>1</active>
                 <testmode>0</testmode>
+                <order_status>pending</order_status>
+                <order_status_after_payment>processing</order_status_after_payment>
                 <sort_order>1</sort_order>
                 <merchantnumber>ENTER YOUR MERCHANTNUMBER HERE</merchantnumber>
                 <agreementid>ENTER YOUR AGREEMENT ID HERE</agreementid>

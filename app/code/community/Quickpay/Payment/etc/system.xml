@@ -114,6 +114,25 @@
                             <show_in_website>1</show_in_website>
                             <show_in_store>1</show_in_store>
                         </specificcountry>
+                        <payment_method translate="label">
+                            <label>Payment Methods</label>
+                            <frontend_type>select</frontend_type>
+                            <sort_order>35</sort_order>
+                            <source_model>quickpaypayment/system_config_source_paymentMethods</source_model>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>1</show_in_store>
+                        </payment_method>
+                        <payment_method_specified translate="label comment">
+                            <label>Payment Method</label>
+                            <frontend_type>text</frontend_type>
+                            <comment>Type in the cards you wish to accept (comma separated). See the valid payment types here: <![CDATA[<a href="http://tech.quickpay.net/appendixes/payment-methods/" target="_blank" rel="noopener">http://tech.quickpay.net/appendixes/payment-methods/</a>]]></comment>
+                            <sort_order>40</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>1</show_in_store>
+                            <depends><payment_method>specified</payment_method></depends>
+                        </payment_method_specified>
                         <specifikcardtypes translate="label">
                             <label>Vælg specifikke betalingsmetoder</label>
                             <frontend_type>multiselect</frontend_type>
