@@ -5,6 +5,10 @@ class Quickpay_Payment_Model_Method_Quickpay extends Quickpay_Payment_Model_Meth
 
     public function getPaymentMethods()
     {
-        return '';
+        if ($this->getConfigData('payment_method') === 'specified') {
+            return $this->getConfigData('payment_method_specified');
+        }
+
+        return $this->getConfigData('payment_method');
     }
 }
