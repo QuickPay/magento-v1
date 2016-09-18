@@ -14,4 +14,19 @@ class Quickpay_Payment_Block_Payment_Redirect extends Mage_Core_Block_Template
         $table = $resource->getTableName('quickpaypayment_order_status');
         $connection->insert($table, array('ordernum' => $payment->getCheckout()->getLastRealOrderId()));
     }
+
+    public function getSuccessUrl()
+    {
+        return $this->getUrl('quickpaypayment/payment/success');
+    }
+
+    public function getCancelUrl()
+    {
+        return $this->getUrl('quickpaypayment/payment/cancel');
+    }
+
+    public function getCallbackUrl()
+    {
+        return $this->getUrl('quickpaypayment/payment/callback');
+    }
 }

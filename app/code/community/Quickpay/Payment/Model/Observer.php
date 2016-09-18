@@ -8,7 +8,6 @@ class Quickpay_Payment_Model_Observer
             Mage::getSingleton('core/session')->setQuickpayState($data['quickpay_state']); // Branding
         }
 
-        Mage::getSingleton('core/session')->setQPayment($data['qpayment_type']); // Payment type selection
         return $this;
     }
 

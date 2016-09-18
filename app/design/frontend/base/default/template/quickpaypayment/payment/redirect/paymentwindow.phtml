@@ -17,9 +17,9 @@ if (isset($quickpay_state[0]) && $quickpay_state[0] == 'checkbox1') {
 $parameters = array(
     "agreement_id"                 => $payment->getConfigData("agreementid"),
     "amount"                       => $order->getTotalDue() * 100,
-    "continueurl"                  => Mage::getUrl('quickpaypayment/payment/success'),
-    "cancelurl"                    => Mage::getUrl('quickpaypayment/payment/cancel'),
-    "callbackurl"                  => Mage::getUrl('quickpaypayment/payment/callback'),
+    "continueurl"                  => $this->getSuccessUrl(),
+    "cancelurl"                    => $this->getCancelUrl(),
+    "callbackurl"                  => $this->getCallbackUrl(),
     "language"                     => $payment->calcLanguage(Mage::app()->getLocale()->getLocaleCode()),
     "autocapture"                  => $payment->getConfigData('instantcapture'),
     "autofee"                      => $payment->getConfigData('transactionfee'),
@@ -38,7 +38,7 @@ $result = Mage::helper('quickpaypayment')->qpCreatePaymentLink($result->id, $par
 
 $paymentUrl = $result->url;
 ?>
-<script type="text/JavaScript">
+<script type="text/javascript">
     window.location.href = "<?php echo $paymentUrl; ?>";
 </script>
 <?php exit(); ?>

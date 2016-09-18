@@ -112,39 +112,6 @@ class Quickpay_Payment_Model_Payment extends Mage_Payment_Model_Method_Abstract
         return false;
     }
 
-
-    // Calculates if any of the card logos are to be shown - in that case return true
-    public function showCardsList()
-    {
-        $logoArray = explode(',', $this->getConfigData('cardlogos'));
-
-        $show_cards = array (
-                'dankort',
-                'edankort',
-                'danskenetbetaling',
-                'nordea',
-                'ewire',
-                'forbrugsforeningen',
-                'visa',
-                'visaelectron',
-                'mastercard',
-                'maestro',
-                'jcb',
-                'diners',
-                'amex',
-                'sofort',
-                'viabill'
-        );
-
-        foreach ($logoArray as $item) {
-                if(in_array($item, $show_cards)) {
-                        return true;
-                }
-        }
-        return false;
-    }
-
-
     public function canCapturePartial()
     {
         $orderid = $this->getInfoInstance()->getOrder()->getIncrementId();
