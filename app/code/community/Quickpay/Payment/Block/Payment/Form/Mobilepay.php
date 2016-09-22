@@ -11,7 +11,7 @@ class Quickpay_Payment_Block_Payment_Form_Mobilepay extends Mage_Payment_Block_F
     protected function _construct()
     {
         parent::_construct();
-        $this->setTemplate('quickpaypayment/payment/form/mobilepay.phtml');
+        $this->setTemplate('quickpaypayment/payment/form/default.phtml');
     }
 
     /**

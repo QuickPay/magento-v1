@@ -11,7 +11,7 @@ class Quickpay_Payment_Block_Payment_Form_Viabill extends Mage_Payment_Block_For
     protected function _construct()
     {
         parent::_construct();
-        $this->setTemplate('quickpaypayment/payment/form/viabill.phtml');
+        $this->setTemplate('quickpaypayment/payment/form/default.phtml');
     }
 
     /**

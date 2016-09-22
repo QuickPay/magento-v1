@@ -1,75 +1,26 @@
 <?php
 $payment = Mage::getModel('quickpaypayment/payment');
 ?>
-<fieldset class="form-list">
-  <?php $_code = $this->getMethodCode() ?>
-  <ul id="payment_form_<?php echo $_code ?>" style="display:none">
+<?php $_code = $this->getMethodCode() ?>
+<ul id="payment_form_<?php echo $_code ?>" style="display:none">
     <li>
-      <?php echo Mage::helper('quickpaypayment')->__('Du har valgt at betale for ordren online. Lige så snart du har gennemført din ordre, vil du blive overført til betalingssystemet. Her skal du gennemføre din betaling. Når betalingen er gennemført, vil du automatisk blive sendt tilbage til vores forretning.'); ?>
+        <div class="<?php echo $this->getMethodCode() ?>-instructions-content">
+            <?php echo nl2br($this->getInstructions()); ?>
+            <?php if ((int)$payment->getConfigData('transactionfee') == 1) : ?>
+            <?php if ($payment->getConfigData('transactionfee')) : ?>
+            <br>
+            <br>
+            <b><?php echo Mage::helper('quickpaypayment')->__("Tranaktionsgebyr"); ?></b>
+            <br>
+            <?php echo Mage::helper('quickpaypayment')->__("Der vil blive opkrævet et transaktionsgebyr ved brug af denne betalingsmetode. Gebyr størrelsen afhænger af kortvalg og vil blive tilføjet ved betaling."); ?>
 
-
-
-      <?php if ((int)$payment->getConfigData('transactionfee') == 1) : ?>
-
-        <?php if ($payment->getConfigData('transactionfee')) : ?>
-          <br>
-          <br>
-          <b><?php echo Mage::helper('quickpaypayment')->__("Tranaktionsgebyr"); ?></b>
-          <br>
-          <?php echo Mage::helper('quickpaypayment')->__("Der vil blive opkrævet et transaktionsgebyr ved brug af denne betalingsmetode. Gebyr størrelsen afhænger af kortvalg og vil blive tilføjet ved betaling."); ?>
-
-        <?php endif; ?>
-      <?php endif; ?>
-
-	  <br/>
-	  <?php
-	  if ($payment->getConfigData('brandingidchecked')!='') {
-	  ?>
-	  <br/><input type="checkbox" name="quickpay_state[]" value="checkbox1"> <?php echo $this->__($payment->getConfigData('brandingidcheckedtext'));?><br/>
-	  <?php } ?>
-
-      <?php if ($payment->showTrustedList()) : ?>
-        <br>
-        <br>
-        <?php $logoArray = explode(',', $payment->getConfigData('trustedlogos')); ?>
-
-        <?php foreach ($logoArray as $item) : ?>
-          <?php
-          switch ($item) {
-            case 'verisign_secure':
-            {
-              ?><img src="<?php echo $this->getSkinUrl('images/quickpaypayment/verisign_secure.gif') ?>"
-                     border="0" />&nbsp;&nbsp;<?php
-              break;
-            }
-            case 'mastercard_securecode':
-            {
-              ?><img src="<?php echo $this->getSkinUrl('images/quickpaypayment/mastercard_securecode.gif') ?>"
-                     border="0" />&nbsp;&nbsp;<?php
-              break;
-            }
-            case 'pci':
-            {
-              ?><img src="<?php echo $this->getSkinUrl('images/quickpaypayment/pci.gif') ?>"
-                     border="0" />&nbsp;&nbsp;<?php
-              break;
-            }
-            case 'nets':
-            {
-              ?><img src="<?php echo $this->getSkinUrl('images/quickpaypayment/nets.png') ?>"
-                     border="0" />&nbsp;&nbsp;<?php
-              break;
-            }
-            case 'euroline':
-            {
-              ?><img src="<?php echo $this->getSkinUrl('images/quickpaypayment/euroline.gif') ?>"
-                     border="0" />&nbsp;&nbsp;<?php
-              break;
-            }
-          }
-          ?>
-        <?php endforeach; ?>
-      <?php endif; ?>
+            <?php endif; ?>
+            <?php endif; ?>
+            <br/>
+            <?php if ($payment->getConfigData('brandingidchecked')!='') : ?>
+            <br/>
+            <input type="checkbox" name="quickpay_state[]" value="checkbox1"> <?php echo $this->__($payment->getConfigData('brandingidcheckedtext'));?><br/>
+            <?php endif; ?>
+        </div>
     </li>
-  </ul>
-</fieldset>
+</ul>

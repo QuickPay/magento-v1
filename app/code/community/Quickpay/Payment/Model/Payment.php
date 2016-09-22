@@ -95,23 +95,6 @@ class Quickpay_Payment_Model_Payment extends Mage_Payment_Model_Method_Abstract
         return $lang;
     }
 
-    // Calculates if any of the trusted logos are to be shown - in that case return true
-    public function showTrustedList()
-    {
-        $logoArray = explode(',', $this->getConfigData('trustedlogos'));
-        foreach ($logoArray as $item) {
-            if ($item == 'verisign_secure' ||
-                $item == 'mastercard_securecode' ||
-                $item == 'pci' ||
-                $item == 'nets' ||
-                $item == 'euroline'
-            ) {
-                return true;
-            }
-        }
-        return false;
-    }
-
     public function canCapturePartial()
     {
         $orderid = $this->getInfoInstance()->getOrder()->getIncrementId();

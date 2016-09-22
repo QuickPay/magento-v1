@@ -194,7 +194,6 @@
                 <googleanalyticsclientid></googleanalyticsclientid>
                 <sendmailorderconfirmation>1</sendmailorderconfirmation>
                 <sendmailorderconfirmationbefore>1</sendmailorderconfirmationbefore>
-                <trustedlogos>verisign_secure,mastercard_securecode,pci,nets</trustedlogos>
                 <handlestock>1</handlestock>
                 <allowspecific>0</allowspecific>
                 <instructions>Pay with your credit card via QuickPay</instructions>
