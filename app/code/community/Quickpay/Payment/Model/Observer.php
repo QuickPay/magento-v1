@@ -93,11 +93,19 @@ class Quickpay_Payment_Model_Observer
     {
         $session = Mage::getSingleton('adminhtml/session');
 
-        try {
-            $order = $observer->getEvent()->getOrder();
-            $qp_order_check = $this->checkOrder($order->getIncrementId());
-            Mage::helper('quickpaypayment')->cancel($order->getId());
+        $order = $observer->getEvent()->getOrder();
+        if (!$order->getPayment()) return $this;
+        if (!$order->getPayment()->getMethodInstance()) return $this;
+        $payment = $order->getPayment()->getMethodInstance();
 
+        if (! $payment instanceof Quickpay_Payment_Model_Method_Abstract) {
+            return $this;
+        }
+
+        $qp_order_check = $this->checkOrder($order->getIncrementId());
+
+        try {
+            Mage::helper('quickpaypayment')->cancel($order->getId());
         } catch (Exception $e) {
             $session->addException($e, Mage::helper('quickpaypayment')->__('Ikke muligt at annullerer betalingen online, grundet denne fejl: %s', $e->getMessage()));
         }
@@ -106,10 +114,7 @@ class Quickpay_Payment_Model_Observer
             because this module changes the logic to deduct stock only when payment is completed. Thus, we need to account for Magento
             return-to-stock operation.
         */
-        if (!$order->getPayment()) return $this;
-        if (!$order->getPayment()->getMethodInstance()) return $this;
-        $payment = $order->getPayment()->getMethodInstance();
-        if (! $qp_order_check && $payment instanceof Quickpay_Payment_Model_Method_Abstract) {
+        if (! $qp_order_check) {
             if ((int)Mage::getStoreConfig('cataloginventory/options/can_subtract') == 1 &&
                 (int)Mage::getStoreConfig('cataloginventory/item_options/manage_stock') == 1
             ) {

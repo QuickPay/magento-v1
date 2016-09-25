@@ -194,6 +194,7 @@
                 <googleanalyticsclientid></googleanalyticsclientid>
                 <sendmailorderconfirmation>1</sendmailorderconfirmation>
                 <sendmailorderconfirmationbefore>1</sendmailorderconfirmationbefore>
+                <cardlogos>dankort,visa,mastercard,maestro</cardlogos>
                 <handlestock>1</handlestock>
                 <allowspecific>0</allowspecific>
                 <instructions>Pay with your credit card via QuickPay</instructions>

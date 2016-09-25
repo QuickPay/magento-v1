@@ -27,4 +27,14 @@ class Quickpay_Payment_Block_Payment_Form_Mobilepay extends Mage_Payment_Block_F
 
         return $this->_instructions;
     }
+
+    /**
+     * Append logo on payment selection form
+     *
+     * @return string
+     */
+    public function getMethodLabelAfterHtml()
+    {
+        return sprintf('<img src="%s" height="20" alt="Mobilepay"/>', $this->getSkinUrl('images/quickpaypayment/mobilepay.png'));
+    }
 }
