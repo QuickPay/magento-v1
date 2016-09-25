@@ -1,19 +1,18 @@
 <?php
 class Quickpay_Payment_Model_Observer
 {
-   public function autoRegisterState(Varien_Event_Observer $observer) {
-	$data = $observer->getEvent()->getControllerAction()->getRequest()->getPost();
-	if (isset($data['quickpay_state'])) {
-	  Mage::getSingleton('core/session')->setQuickpayState($data['quickpay_state']); // Branding
-	}
-	Mage::getSingleton('core/session')->setQPayment($data['qpayment_type']); // Payment type selection
-	return $this;
-   }
+    public function autoRegisterState(Varien_Event_Observer $observer)
+    {
+        $data = $observer->getEvent()->getControllerAction()->getRequest()->getPost();
+        if (isset($data['quickpay_state'])) {
+            Mage::getSingleton('core/session')->setQuickpayState($data['quickpay_state']); // Branding
+        }
 
+        return $this;
+    }
 
     public function capture($observer)
     {
-
         Mage::log('start capture', null, 'qp_capture.log');
 
         $session = Mage::getSingleton('adminhtml/session');
@@ -21,12 +20,7 @@ class Quickpay_Payment_Model_Observer
         try {
             $payment = $observer->getPayment()->getMethodInstance();
 
-            Mage::log(get_class($payment), null, 'qp_capture.log');
-
-
-            $payment_method_code = $payment->getCode();
-            //if (get_class($payment) == "Quickpay_Payment_Model_Payment") {
-            if ($payment_method_code == 'quickpaypayment_payment') {
+            if ($payment instanceof Quickpay_Payment_Model_Method_Abstract) {
                 $invoice = $observer->getInvoice();
                 $finalize = Mage::app()->getRequest()->getPost('qp_finalize', false);
                 Mage::log($invoice->getGrandTotal(), null, 'qp_capture.log');
@@ -65,27 +59,27 @@ class Quickpay_Payment_Model_Observer
             $creditmemo = $observer->getEvent()->getCreditmemo();
             $refundtotal = $creditmemo->getGrandTotal();
 
-	    // Ignore refund if done in 5 seconds with same amount
-	    // This makes the refund behave well, if a messy extension fires the sales_order_creditmemo_refund event twice or more
-	    $previousCall = $session->getTimeAndAmount();
-	    $nowCall = array('time' => time(),'amount' => $refundtotal);
-	    $session->setTimeAndAmount($nowCall);
-	    if(count($previousCall) > 0){
+            // Ignore refund if done in 5 seconds with same amount
+            // This makes the refund behave well, if a messy extension fires the sales_order_creditmemo_refund event twice or more
+            $previousCall = $session->getTimeAndAmount();
+            $nowCall = array('time' => time(),'amount' => $refundtotal);
+            $session->setTimeAndAmount($nowCall);
+            if (count($previousCall) > 0) {
+                $timeSpacing = $nowCall['time'] - $previousCall['time'];
+                $amountSpacing = $previousCall['amount'] - $nowCall['amount'];
+            }
 
-		    $timeSpacing = $nowCall['time'] - $previousCall['time'];
-		    $amountSpacing = $previousCall['amount'] - $nowCall['amount'];
-	    }
-	    $ignoreRefund = true;
-	    if(isset($timeSpacing) && isset($amountSpacing)){
-		    if($timeSpacing < 5 && $amountSpacing == 0){
-			    $ignoreRefund = false;
-		    }
-	    }
+            $ignoreRefund = true;
+            if (isset($timeSpacing) && isset($amountSpacing)) {
+                if ($timeSpacing < 5 && $amountSpacing == 0){
+                    $ignoreRefund = false;
+                }
+            }
 
             $order = Mage::getModel('sales/order')->load($creditmemo->getOrderId());
-            $payment_method_code = $order->getPayment()->getMethodInstance()->getCode();
+            $payment = $order->getPayment()->getMethodInstance();
 
-            if ($payment_method_code == 'quickpaypayment_payment' && $ignoreRefund) {
+            if ($payment instanceof Quickpay_Payment_Model_Method_Abstract && $ignoreRefund) {
                 Mage::helper('quickpaypayment')->refund($creditmemo->getOrderId(), $refundtotal);
             }
 
@@ -99,11 +93,19 @@ class Quickpay_Payment_Model_Observer
     {
         $session = Mage::getSingleton('adminhtml/session');
 
-        try {
-            $order = $observer->getEvent()->getOrder();
-            $qp_order_check = $this->checkOrder($order->getIncrementId());
-            Mage::helper('quickpaypayment')->cancel($order->getId());
+        $order = $observer->getEvent()->getOrder();
+        if (!$order->getPayment()) return $this;
+        if (!$order->getPayment()->getMethodInstance()) return $this;
+        $payment = $order->getPayment()->getMethodInstance();
 
+        if (! $payment instanceof Quickpay_Payment_Model_Method_Abstract) {
+            return $this;
+        }
+
+        $qp_order_check = $this->checkOrder($order->getIncrementId());
+
+        try {
+            Mage::helper('quickpaypayment')->cancel($order->getId());
         } catch (Exception $e) {
             $session->addException($e, Mage::helper('quickpaypayment')->__('Ikke muligt at annullerer betalingen online, grundet denne fejl: %s', $e->getMessage()));
         }
@@ -112,10 +114,7 @@ class Quickpay_Payment_Model_Observer
             because this module changes the logic to deduct stock only when payment is completed. Thus, we need to account for Magento
             return-to-stock operation.
         */
-        if (!$order->getPayment()) return $this;
-        if (!$order->getPayment()->getMethodInstance()) return $this;
-        $payment_method_code = $order->getPayment()->getMethodInstance()->getCode();
-        if (!$qp_order_check && strpos($payment_method_code, "quickpay") !== FALSE) {
+        if (! $qp_order_check) {
             if ((int)Mage::getStoreConfig('cataloginventory/options/can_subtract') == 1 &&
                 (int)Mage::getStoreConfig('cataloginventory/item_options/manage_stock') == 1
             ) {
@@ -153,8 +152,8 @@ class Quickpay_Payment_Model_Observer
             $order = $observer->getEvent()->getOrder();
             if (!$order->getPayment()) return;
             if (!$order->getPayment()->getMethodInstance()) return;
-            $payment_method_code = $order->getPayment()->getMethodInstance()->getCode();
-            if (strpos($payment_method_code, "quickpay") !== FALSE) {
+            $payment = $order->getPayment()->getMethodInstance();
+            if ($payment instanceof Quickpay_Payment_Model_Method_Abstract) {
                 if ((int)Mage::getStoreConfig('cataloginventory/options/can_subtract') == 1 &&
                     (int)Mage::getStoreConfig('cataloginventory/item_options/manage_stock') == 1
                 ) {
@@ -172,8 +171,8 @@ class Quickpay_Payment_Model_Observer
 
         try {
             $order = $observer->getEvent()->getOrder();
-            $payment_method_code = $order->getPayment()->getMethodInstance()->getCode();
-            if ($payment_method_code == 'quickpaypayment_payment') {
+            $payment = $order->getPayment()->getMethodInstance();
+            if ($payment instanceof Quickpay_Payment_Model_Method_Abstract) {
                 $order->setStatus('pending');
             }
 

@@ -2,7 +2,7 @@
 <config>
     <modules>
         <Quickpay_Payment>
-            <version>3.1.30</version>
+            <version>3.2.0</version>
         </Quickpay_Payment>
     </modules>
     <global>
@@ -178,10 +178,12 @@
     <default>
         <payment>
             <quickpaypayment_payment>
-                <model>quickpaypayment/payment</model>
-                <title>Quickpay Kortbetaling</title>
+                <model>quickpaypayment/method_quickpay</model>
+                <title>QuickPay Kortbetaling</title>
                 <active>1</active>
                 <testmode>0</testmode>
+                <order_status>pending</order_status>
+                <order_status_after_payment>processing</order_status_after_payment>
                 <sort_order>1</sort_order>
                 <merchantnumber>ENTER YOUR MERCHANTNUMBER HERE</merchantnumber>
                 <agreementid>ENTER YOUR AGREEMENT ID HERE</agreementid>
@@ -192,12 +194,10 @@
                 <googleanalyticsclientid></googleanalyticsclientid>
                 <sendmailorderconfirmation>1</sendmailorderconfirmation>
                 <sendmailorderconfirmationbefore>1</sendmailorderconfirmationbefore>
-                <trustedlogos>verisign_secure,mastercard_securecode,pci,nets</trustedlogos>
-                <cardlogos>
-                dankort,edankort,danskenetbetaling,nordea,ewire,forbrugsforeningen,visa,visaelectron,mastercard,maestro,jcb,diners,amex,mobilepay
-                </cardlogos>
+                <cardlogos>dankort,visa,mastercard,maestro</cardlogos>
                 <handlestock>1</handlestock>
                 <allowspecific>0</allowspecific>
+                <instructions>Pay with your credit card via QuickPay</instructions>
                 <transaction_type>O</transaction_type>
                 <post_url>https://secure.quickpay.dk/form/</post_url>
                 <instantcapture>0</instantcapture>
@@ -205,6 +205,22 @@
                 <transactionfee>0</transactionfee>
                 <specifytransactionfee>0</specifytransactionfee>
             </quickpaypayment_payment>
+            <quickpay_viabill>
+                <active>0</active>
+                <model>quickpaypayment/method_viabill</model>
+                <order_status>pending</order_status>
+                <title>QuickPay ViaBill</title>
+                <allowspecific>0</allowspecific>
+                <instructions>Pay with ViaBill</instructions>
+            </quickpay_viabill>
+            <quickpay_mobilepay>
+                <active>0</active>
+                <model>quickpaypayment/method_mobilepay</model>
+                <order_status>pending</order_status>
+                <title>QuickPay MobilePay</title>
+                <allowspecific>0</allowspecific>
+                <instructions>Pay with MobilePay</instructions>
+            </quickpay_mobilepay>
         </payment>
         <web>
             <session>
