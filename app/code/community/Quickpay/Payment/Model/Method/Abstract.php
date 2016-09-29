@@ -7,6 +7,7 @@ abstract class Quickpay_Payment_Model_Method_Abstract extends Mage_Payment_Model
     protected $_canCapture              = true;
     protected $_canRefund               = true;
     protected $_canRefundInvoicePartial = true;
+    protected $_canVoid                 = true;
     protected $_canUseForMultishipping  = false;
 
     /**
@@ -100,6 +101,50 @@ abstract class Quickpay_Payment_Model_Method_Abstract extends Mage_Payment_Model
         }
 
         return false;
+    }
+
+    /**
+     * Capture payment
+     *
+     * @param Varien_Object $payment
+     * @param float $amount
+     *
+     * @return Quickpay_Payment_Model_Method_Abstract
+     */
+    public function capture(Varien_Object $payment, $amount)
+    {
+
+        return $this;
+    }
+
+    /**
+     * Void payment
+     *
+     * @param Varien_Object $payment
+     *
+     * @return Quickpay_Payment_Model_Method_Abstract
+     */
+    public function void(Varien_Object $payment)
+    {
+        try {
+            $order = $payment->getOrder();
+            Mage::helper('quickpaypayment')->cancel($order);
+        } catch (Exception $e) {
+            Mage::getSingleton('adminhtml/session')->addException($e, Mage::helper('quickpaypayment')->__('Ikke muligt at annullerer betalingen online, grundet denne fejl: %s', $e->getMessage()));
+        }
+
+        return $this;
+    }
+
+    /**
+     * Cancel the payment through gateway
+     *
+     * @param  Mage_Payment_Model_Info $payment
+     * @return Quickpay_Payment_Model_Method_Abstract
+     */
+    public function cancel(Varien_Object $payment)
+    {
+        return $this->void($payment);
     }
 
     public function getTitle()

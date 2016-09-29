@@ -1,8 +1,6 @@
 <?php
 class Quickpay_Payment_Helper_Data extends Mage_Core_Helper_Abstract
 {
-    protected $connTimeout = 10;
-    // The connection timeout to Quickpay gateway
     protected $apiUrl = "https://api.quickpay.net";
     protected $apiVersion = 'v10';
     protected $apiKey = "";
@@ -12,72 +10,119 @@ class Quickpay_Payment_Helper_Data extends Mage_Core_Helper_Abstract
     /**
      * Send a request to Quickpay.
      */
-    function request($resource, $postdata = null, $synchronized="?synchronized")
+    protected function request($resource, $postdata = array(), $synchronized = "?synchronized")
     {
-        if (!function_exists('curl_init')) {
-            Mage::throwException('CURL is not installed, please install curl');
-        }
+        $client = new Zend_Http_Client();
 
-        $curl = curl_init();
         $url = $this->apiUrl . "/" . $resource . $synchronized;
-        curl_setopt($curl, CURLOPT_URL, $url);
-        curl_setopt($curl, CURLOPT_TIMEOUT, $this->connTimeout);
-        curl_setopt($curl, CURLOPT_RETURNTRANSFER, true);
-        curl_setopt($curl, CURLOPT_HTTPHEADER, array('Authorization: Basic ' . base64_encode(":" . $this->apiKey), 'Accept-Version: ' . $this->apiVersion, 'Accept: ' . $this->format));
 
-        if (! is_null($postdata)) {
-            curl_setopt($curl, CURLOPT_POST, 1);
-            curl_setopt($curl, CURLOPT_POSTFIELDS, http_build_query($postdata));
+        $client->setUri($url);
+
+        $headers = array(
+            'Authorization'  => 'Basic ' . base64_encode(":" . $this->apiKey),
+            'Accept-Version' => $this->apiVersion,
+            'Accept'         => $this->format,
+            'Content-Type'   => 'application/json',
+            'Content-Length' => strlen(json_encode($postdata))
+        );
+
+        $client->setHeaders($headers);
+        $client->setMethod(Zend_Http_Client::POST);
+        $client->setRawData(json_encode($postdata));
+
+        $request = $client->request();
+
+        if (! in_array($request->getStatus(), array(200, 201, 202))) {
+            Mage::throwException($request->getBody());
         }
 
-        $response = curl_exec($curl);
-
-        $httpCode = curl_getinfo($curl, CURLINFO_HTTP_CODE);
-        curl_close($curl);
-
-        if (! in_array($httpCode, array(200, 201, 202))) {
-            Mage::throwException($response);
-        }
-
-        return $response;
+        return $request->getBody();
     }
 
-    function put($resource, $postdata = null)
+    protected function put($resource, $postdata = array())
     {
-        $curl = curl_init();
+        $client = new Zend_Http_Client();
+
         $url = $this->apiUrl . "/" . $resource;
-        curl_setopt($curl, CURLOPT_URL, $url);
-        curl_setopt($curl, CURLOPT_TIMEOUT, $this->connTimeout);
-        curl_setopt($curl, CURLOPT_RETURNTRANSFER, true);
-        curl_setopt($curl, CURLOPT_HTTPHEADER, array('Authorization: Basic ' . base64_encode(":" . $this->apiKey), 'Accept-Version: ' . $this->apiVersion, 'Accept: ' . $this->format));
-        if (! is_null($postdata)) {
-            curl_setopt($curl, CURLOPT_CUSTOMREQUEST, "PUT");
-            curl_setopt($curl, CURLOPT_POSTFIELDS, http_build_query($postdata));
+
+        $client->setUri($url);
+
+        $headers = array(
+            'Authorization'  => 'Basic ' . base64_encode(":" . $this->apiKey),
+            'Accept-Version' => $this->apiVersion,
+            'Accept'         => $this->format,
+            'Content-Type'   => 'application/json',
+            'Content-Length' => strlen(json_encode($postdata))
+        );
+
+        $client->setHeaders($headers);
+        $client->setMethod(Zend_Http_Client::PUT);
+        $client->setRawData(json_encode($postdata));
+
+        $request = $client->request();
+
+        if (! in_array($request->getStatus(), array(200, 201, 202))) {
+            Mage::throwException($request->getBody());
         }
 
-        $response = curl_exec($curl);
-
-        $httpCode = curl_getinfo($curl, CURLINFO_HTTP_CODE);
-        curl_close($curl);
-
-        if (! in_array($httpCode, array(200, 201, 202))) {
-            Mage::throwException($response);
-        }
-
-        return $response;
+        return $request->getBody();
     }
 
     /**
      * Create a payment at the quickpay gateway
      */
-    function qpCreatePayment($orderid, $currency)
+    public function qpCreatePayment(Mage_Sales_Model_Order $order)
     {
         $postArray = array();
-        $postArray['order_id'] = $orderid;
-        $postArray['currency'] = $currency;
+
+        $postArray['order_id'] = $order->getIncrementId();
+        $postArray['currency'] = $order->getOrderCurrency()->ToString();
+
+        $shippingAddress = $order->getShippingAddress();
+        $billingAddress = $order->getBillingAddress();
+
+        //Add shipping_address
+        if ($shippingAddress) {
+            $postArray['shipping_address']['name'] = $shippingAddress->getName();
+            $postArray['shipping_address']['street'] = $shippingAddress->getStreetFull();
+            $postArray['shipping_address']['city'] = $shippingAddress->getCity();
+            $postArray['shipping_address']['zip_code'] = $shippingAddress->getPostcode();
+            $postArray['shipping_address']['region'] = $shippingAddress->getRegion();
+            $postArray['shipping_address']['country_code'] = Mage::app()->getLocale()->getTranslation($shippingAddress->getCountryId(), 'Alpha3ToTerritory');
+            $postArray['shipping_address']['phone_number'] = $shippingAddress->getTelephone();
+            $postArray['shipping_address']['email'] = $shippingAddress->getEmail();
+        }
+
+        //Add billing_address
+        if ($billingAddress) {
+            $postArray['invoice_address']['name'] = $billingAddress->getName();
+            $postArray['invoice_address']['street'] = $billingAddress->getStreetFull();
+            $postArray['invoice_address']['city'] = $billingAddress->getCity();
+            $postArray['invoice_address']['zip_code'] = $billingAddress->getPostcode();
+            $postArray['invoice_address']['region'] = $billingAddress->getRegion();
+            $postArray['invoice_address']['country_code'] = Mage::app()->getLocale()->getTranslation($billingAddress->getCountryId(), 'Alpha3ToTerritory');
+            $postArray['invoice_address']['phone_number'] = $billingAddress->getTelephone();
+            $postArray['invoice_address']['email'] = $billingAddress->getEmail();
+        }
+
+        $postArray['basket'] = array();
+
+        //Add order items to basket array
+        foreach ($order->getAllVisibleItems() as $item) {
+            $product = array(
+                'qty'        => (int) $item->getQtyOrdered(),
+                'item_no'    => $item->getSku(),
+                'item_name'  => $item->getName(),
+                'item_price' => (int) $item->getBasePriceInclTax(),
+                'vat_rate'   => $item->getTaxPercent(),
+            );
+
+            $postArray['basket'][] = $product;
+        }
+
         $storeId = Mage::app()->getStore()->getStoreId();
         $this->apiKey = Mage::getStoreConfig('payment/quickpaypayment_payment/apikey', $storeId);
-        $result = $this->request('payments', $postArray,"");
+        $result = $this->request('payments', $postArray, '');
         $result = json_decode($result);
 
         return $result;
@@ -138,6 +183,7 @@ class Quickpay_Payment_Helper_Data extends Mage_Core_Helper_Abstract
         $postArray['id'] = $id;
         $result = $this->request('payments/' . $id . '/cancel', $postArray);
         $result = json_decode($result);
+
         return $result;
     }
 
@@ -249,9 +295,8 @@ class Quickpay_Payment_Helper_Data extends Mage_Core_Helper_Abstract
         $order->save();
     }
 
-    public function cancel($orderid)
+    public function cancel(Mage_Sales_Model_Order $order)
     {
-        $order = Mage::getModel('sales/order')->load($orderid);
         $orderid = explode("-", $order->getIncrementId());
 
         $session = Mage::getSingleton('adminhtml/session');

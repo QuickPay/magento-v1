@@ -40,15 +40,6 @@
                     </auto_register_payment>
                 </observers>
             </controller_action_postdispatch_checkout_onepage_savePayment>
-            <sales_order_payment_capture>
-                <observers>
-                    <module>
-                        <type>singleton</type>
-                        <class>Quickpay_Payment_Model_Observer</class>
-                        <method>capture</method>
-                    </module>
-                </observers>
-            </sales_order_payment_capture>
             <checkout_type_onepage_save_order_after>
                 <observers>
                     <module>
@@ -76,15 +67,6 @@
                     </module>
                 </observers>
             </sales_order_creditmemo_refund>
-            <order_cancel_after>
-                <observers>
-                    <module>
-                        <type>singleton</type>
-                        <class>Quickpay_Payment_Model_Observer</class>
-                        <method>cancel</method>
-                    </module>
-                </observers>
-            </order_cancel_after>
             <sales_order_place_after>
             <observers>
                 <module>
