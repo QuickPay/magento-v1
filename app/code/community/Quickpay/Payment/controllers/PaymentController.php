@@ -139,6 +139,7 @@ class Quickpay_Payment_PaymentController extends Mage_Core_Controller_Front_Acti
 
                 $metadata = $request->metadata;
                 $fraudSuspected = $metadata->fraud_suspected;
+                $fraudProbability = "high"; //Assume high
                 if ($fraudSuspected) {
                     $fraudProbability = "high";
                 } else {
@@ -154,12 +155,36 @@ class Quickpay_Payment_PaymentController extends Mage_Core_Controller_Front_Acti
                 $resource = Mage::getSingleton('core/resource');
                 $table = $resource->getTableName('quickpaypayment_order_status');
 
-                $query = "UPDATE $table SET " . 'transaction = "' . ((isset($request->id)) ? $request->id : '') . '", ' . 'status = "' . ((isset($request->accepted)) ? $request->accepted : '') . '", ' . 'pbsstat = "' . ((isset($_POST['pbsstat'])) ? $_POST['pbsstat'] : '') . '", ' . 'qpstat = "' . ((isset($operation->qp_status_code)) ? $operation->qp_status_code : '') . '", ' . 'qpstatmsg = "' . ((isset($operation->qp_status_msg)) ? $operation->qp_status_msg : '') . '", ' . 'chstat = "' . ((isset($operation->aq_status_code)) ? $operation->aq_status_code : '') . '", ' . 'chstatmsg = "' . ((isset($operation->aq_status_msg)) ? $operation->aq_status_msg : '') . '", ' . 'merchantemail = "' . ((isset($_POST['merchantemail'])) ? $_POST['merchantemail'] : '') . '", ' . 'merchant = "' . ((isset($_POST['merchant'])) ? $_POST['merchant'] : '') . '", ' . 'amount = "' . ((isset($operation->amount)) ? $operation->amount : '') . '", ' . 'currency = "' . ((isset($request->currency)) ? $request->currency : '') . '", ' . 'time = "' . ((isset($request->created_at)) ? $request->created_at : '') . '", ' . 'md5check = "' . ((isset($_POST['md5check'])) ? $_POST['md5check'] : '') . '", ' . 'cardtype = "' . ((isset($request->metadata->brand)) ? $request->metadata->brand : '') . '", ' . 'cardnumber = "' . ((isset($_POST['cardnumber'])) ? $_POST['cardnumber'] : '') . '", ' . 'splitpayment = "' . ((isset($_POST['splitpayment'])) ? $_POST['splitpayment'] : '') . '", ' . 'fraudprobability = "' . ((isset($fraudProbability)) ? $fraudProbability : '') . '", ' . 'fraudremarks = "' . ((isset($fraudRemarks)) ? $fraudRemarks : '') . '", ' . 'fraudreport = "' . ((isset($_POST['fraudreport'])) ? $_POST['fraudreport'] : '') . '", ' . 'fee = "' . ((isset($_POST['fee'])) ? $_POST['fee'] : '') . '", ' . 'capturedAmount = "0", ' . 'refundedAmount = "0"  ' . 'where ordernum = "' . $request->order_id . '"';
-
+                $query = "UPDATE {$table} SET transaction = :transaction, status = :status, pbsstat = :pbsstat, qpstat = :qpstat, qpstatmsg = :qpstatmsg, chstat = :chstat, chstatmsg = :chstatmsg, merchantemail = :merchantemail, merchant = :merchant, amount = :amount, currency = :currency, time = :time, md5check = :md5check, cardtype = :cardtype, cardnumber = :cardnumber, splitpayment = :splitpayment, fraudprobability = :fraudprobability, fraudremarks = :fraudremarks, fraudreport = :fraudreport, fee = :fee, capturedAmount = :capturedAmount, refundedAmount = :refundedAmount WHERE ordernum = :order_id";
+                $binds = array(
+                    'transaction'      => isset($request->id) ? $request->id : '',
+                    'status'           => isset($request->accepted) ? $request->accepted : '',
+                    'pbsstat'          => $this->getRequest()->getParam('pbsstat', ''),
+                    'qpstat'           => isset($operation->qp_status_code) ? $operation->qp_status_code : '',
+                    'qpstatmsg'        => isset($operation->qp_status_msg) ? $operation->qp_status_msg : '',
+                    'chstat'           => isset($operation->aq_status_code) ? $operation->aq_status_code : '',
+                    'chstatmsg'        => isset($operation->aq_status_msg) ? $operation->aq_status_msg : '',
+                    'merchantemail'    => $this->getRequest()->getParam('merchantemail', ''),
+                    'merchant'         => $this->getRequest()->getParam('merchant', ''),
+                    'amount'           => isset($operation->amount) ? $operation->amount : '',
+                    'currency'         => isset($request->currency) ? $request->currency : '',
+                    'time'             => isset($request->created_at) ? $request->created_at : '',
+                    'md5check'         => $this->getRequest()->getParam('md5check', ''),
+                    'cardtype'         => isset($request->metadata->brand) ? $request->metadata->brand : '',
+                    'cardnumber'       => $this->getRequest()->getParam('cardnumber', ''),
+                    'splitpayment'     => $this->getRequest()->getParam('splitpayment', ''),
+                    'fraudprobability' => $fraudProbability,
+                    'fraudremarks'     => isset($fraudRemarks) ? $fraudRemarks : '',
+                    'fraudreport'      => $this->getRequest()->getParam('fraudreport', ''),
+                    'fee'              => $this->getRequest()->getParam('fee', ''),
+                    'capturedAmount'   => '0',
+                    'refundedAmount'   => '0',
+                    'order_id'         => $request->order_id,
+                );
                 Mage::log($query, null, 'qp_callback.log');
 
                 $write = $resource->getConnection('core_write');
-                $write->query($query);
+                $write->query($query, $binds);
 
                 if (((int)$payment->getConfigData('sendmailorderconfirmation')) == 1) {
                     $order->sendNewOrderEmail();

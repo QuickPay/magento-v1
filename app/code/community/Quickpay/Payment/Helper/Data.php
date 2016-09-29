@@ -160,9 +160,13 @@ class Quickpay_Payment_Helper_Data extends Mage_Core_Helper_Abstract
         $resource = Mage::getSingleton('core/resource');
         $connection = $resource->getConnection('core_read');
         $table = $resource->getTableName('quickpaypayment_order_status');
-        $qpOrderStatus = $connection->fetchAll("SELECT * FROM $table WHERE ordernum=" . $orderid[0]);
 
-        $qpOrderStatus = $qpOrderStatus[0];
+        $query = "SELECT transaction, capturedAmount, amount FROM {$table} WHERE ordernum = :order_number";
+        $binds = array(
+            'order_number' => $orderid[0],
+        );
+        $qpOrderStatus = $connection->fetchRow($query, $binds);
+
         Mage::log($qpOrderStatus, null, 'qp_capture.log');
         $quickPayTransactionId = $qpOrderStatus['transaction'];
         $capturedAmount = (isset($qpOrderStatus['capturedAmount']) ? $qpOrderStatus['capturedAmount'] : 0);
@@ -186,7 +190,19 @@ class Quickpay_Payment_Helper_Data extends Mage_Core_Helper_Abstract
                 $session->addSuccess(Mage::helper('quickpaypayment')->__('Betalingen er hævet online.'));
                 $write = $resource->getConnection('core_write');
 
-                $write->query("UPDATE $table SET " . 'status = "", ' . 'time = "' . ((isset($result->created_at)) ? $result->created_at : '') . '", ' . 'qpstat = "' . ((isset($result->qp_status_code)) ? $result->qp_status_code : '') . '", ' . 'qpstatmsg = "' . ((isset($result->qp_status_msg)) ? $result->qp_status_msg : '') . '", ' . 'chstat = "' . ((isset($result->aq_status_code)) ? $result->aq_status_code : '') . '", ' . 'chstatmsg = "' . ((isset($result->aq_status_msg)) ? $result->aq_status_msg : '') . '", ' . 'splitpayment = "' . ((isset($result->split_payment)) ? $result->split_payment : '') . '" ,' . 'md5check = "' . ((isset($response['md5check'])) ? $response['md5check'] : '') . '", ' . 'capturedAmount = ' . $newCapturedAmount . ' ' . 'WHERE ordernum=' . $orderid[0]);
+                $query = "UPDATE {$table} SET status = :status, time = :time, qpstat = :qpstat, qpstatmsg = :qpstatmsg, chstat = :chstat, chstatmsg = :chstatmsg, splitpayment = :splitpayment, capturedAmount = :capturedAmount WHERE ordernum = :order_number";
+                $binds = array(
+                    'status'         => 0,
+                    'time'           => isset($result->created_at) ? $result->created_at : '',
+                    'qpstat'         => isset($result->qp_status_code) ? $result->qp_status_code : '',
+                    'qpstatmsg'      => isset($result->qp_status_msg) ? $result->qp_status_msg : '',
+                    'chstat'         => isset($result->aq_status_code) ? $result->aq_status_code : '',
+                    'chstatmsg'      => isset($result->aq_status_msg) ? $result->aq_status_msg : '',
+                    'splitpayment'   => isset($result->split_payment) ? $result->split_payment : '',
+                    'capturedAmount' => $newCapturedAmount,
+                    'order_number'   => $orderid[0],
+                );
+                $write->query($query, $binds);
 
                 $this->createTransaction($order, $quickPayTransactionId, Mage_Sales_Model_Order_Payment_Transaction::TYPE_CAPTURE);
             } else {
@@ -208,9 +224,15 @@ class Quickpay_Payment_Helper_Data extends Mage_Core_Helper_Abstract
         $resource = Mage::getSingleton('core/resource');
         $connection = $resource->getConnection('core_read');
         $table = $resource->getTableName('quickpaypayment_order_status');
-        $qpOrderStatus = $connection->fetchAll("SELECT * FROM $table WHERE ordernum=" . $orderid[0]);
-        $qpOrderStatus = $qpOrderStatus[0];
 
+        $query = "SELECT transaction, capturedAmount FROM {$table} WHERE ordernum = :order_number";
+        $binds = array(
+            'order_number' => $orderid[0],
+        );
+
+        $qpOrderStatus = $connection->fetchRow($query, $binds);
+
+        $storeId = $order->getStoreId();
         $this->apiKey = Mage::getStoreConfig('payment/quickpaypayment_payment/apikey', $storeId);
 
         if ($refundtotal < 0) {
@@ -235,7 +257,18 @@ class Quickpay_Payment_Helper_Data extends Mage_Core_Helper_Abstract
             if ($result->qp_status_code == "20000") {
                 $session->addSuccess(Mage::helper('quickpaypayment')->__('Kreditnota refunderet online'));
                 $write = Mage::getSingleton('core/resource')->getConnection('core_write');
-                $write->query("UPDATE $table SET " . 'refundedAmount = ' . ($refundtotal * 100) . ', ' . 'status = "", ' . 'time = "' . ((isset($result->created_at)) ? $result->created_at : '') . '", ' . 'qpstat = "' . ((isset($result->qp_status_code)) ? $result->qp_status_code : '') . '", ' . 'qpstatmsg = "' . ((isset($result->qp_status_msg)) ? $result->qp_status_msg : '') . '", ' . 'chstat = "' . ((isset($result->aq_status_code)) ? $result->aq_status_code : '') . '", ' . 'chstatmsg = "' . ((isset($result->aq_status_msg)) ? $result->aq_status_msg : '') . '" ' . 'WHERE ordernum=' . $orderid[0]);
+                $query = "UPDATE {$table} SET refundedAmount = :refundedAmount, status = :status, time = :time, qpstat = :qpstat, qpstatmsg = :qpstatmsg, chstat = :chstat, chstatmsg = :chstatmsg WHERE ordernum = :order_number";
+                $binds = array(
+                    'refundedAmount' => $refundtotal * 100,
+                    'status'         => 0,
+                    'time'           => isset($result->created_at) ? $result->created_at : '',
+                    'qpstat'         => isset($result->qp_status_code) ? $result->qp_status_code : '',
+                    'qpstatmsg'      => isset($result->qp_status_msg) ? $result->qp_status_msg : '',
+                    'chstat'         => isset($result->aq_status_code) ? $result->aq_status_code : '',
+                    'chstatmsg'      => isset($result->aq_status_msg) ? $result->aq_status_msg : '',
+                    'order_number'   => $orderid[0],
+                );
+                $write->query($query, $binds);
 
                 $this->createTransaction($order, $qpOrderStatus['transaction'], Mage_Sales_Model_Order_Payment_Transaction::TYPE_REFUND);
             } else {
@@ -258,10 +291,14 @@ class Quickpay_Payment_Helper_Data extends Mage_Core_Helper_Abstract
         $resource = Mage::getSingleton('core/resource');
         $connection = $resource->getConnection('core_read');
         $table = $resource->getTableName('quickpaypayment_order_status');
-        $qpOrderStatus = $connection->fetchAll("SELECT * FROM $table WHERE ordernum=" . $orderid[0]);
-        $qpOrderStatus = $qpOrderStatus[0];
 
-        $this->apiKey = Mage::getStoreConfig('payment/quickpaypayment_payment/apikey');
+        $query = "SELECT transaction FROM {$table} WHERE ordernum = :order_number";
+        $binds = array(
+            'order_number' => $orderid[0],
+        );
+        $qpOrderStatus = $connection->fetchRow($query, $binds);
+
+        $this->apiKey = Mage::getStoreConfig('payment/quickpaypayment_payment/apikey', $order->getStoreId());
 
         $errorMessage = "";
         try {
@@ -281,7 +318,17 @@ class Quickpay_Payment_Helper_Data extends Mage_Core_Helper_Abstract
             $session->addSuccess(Mage::helper('quickpaypayment')->__('Betalingen blev annulleret online'));
             $write = Mage::getSingleton('core/resource')->getConnection('core_write');
 
-            $write->query("UPDATE $table SET " . 'status = "", ' . 'time = "' . ((isset($result->created_at)) ? $result->created_at : '') . '", ' . 'qpstat = "' . ((isset($result->qp_status_code)) ? $result->qp_status_code : '') . '", ' . 'qpstatmsg = "' . ((isset($result->qp_status_msg)) ? $result->qp_status_msg : '') . '", ' . 'chstat = "' . ((isset($result->aq_status_code)) ? $result->aq_status_code : '') . '", ' . 'chstatmsg = "' . ((isset($result->aq_status_msg)) ? $result->aq_status_msg : '') . '" ' . 'WHERE ordernum=' . $orderid[0]);
+            $query = "UPDATE {$table} SET status = :status, time = :time, qpstat = :qpstat, qpstatmsg = :qpstatmsg, chstat = :chstat, chstatmsg = :chstatmsg WHERE ordernum = :order_number";
+            $binds = array(
+                'status'       => 0,
+                'time'         => isset($result->created_at) ? $result->created_at : '',
+                'qpstat'       => isset($result->qp_status_code) ? $result->qp_status_code : '',
+                'qpstatmsg'    => isset($result->qp_status_msg) ? $result->qp_status_msg : '',
+                'chstat'       => isset($result->aq_status_code) ? $result->aq_status_code : '',
+                'chstatmsg'    => isset($result->aq_status_msg) ? $result->aq_status_msg : '',
+                'order_number' => $orderid[0],
+            );
+            $write->query($query, $binds);
         } else {
             Mage::throwException($result->qp_status_msg);
         }
@@ -322,7 +369,12 @@ class Quickpay_Payment_Helper_Data extends Mage_Core_Helper_Abstract
                 $resource = Mage::getSingleton('core/resource');
                 $table = $resource->getTableName('quickpaypayment_order_status');
                 $read = $resource->getConnection('core_read');
-                $row = $read->fetchRow("SELECT * FROM $table WHERE ordernum = '$order_increment_id'");
+
+                $query = "SELECT * FROM {$table} WHERE ordernum = :order_number";
+                $binds = array(
+                    'order_number' => $order_increment_id,
+                );
+                $row = $read->fetchRow($query, $binds);
 
                 return $row;
             }

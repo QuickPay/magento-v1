@@ -26,7 +26,11 @@ class Quickpay_Payment_Block_Info_Quickpay extends Mage_Payment_Block_Info
             $resource = Mage::getSingleton('core/resource');
             $table = $resource->getTableName('quickpaypayment_order_status');
 
-            $row = $this->paymentData = $read->fetchRow("select * from " . $table . " where ordernum = " . $this->getInfo()->getOrder()->getIncrementId());
+            $query = "SELECT qpstat, transaction, cardtype, currency FROM {$table} WHERE ordernum = :order_number";
+            $binds = array(
+                'order_number' => $this->getInfo()->getOrder()->getIncrementId(),
+            );
+            $row = $this->paymentData = $read->fetchRow($query, $binds);
 
             if (is_array($row)) {
                 if ($row['qpstat'] == 20000) {
