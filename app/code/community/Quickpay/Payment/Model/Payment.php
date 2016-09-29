@@ -103,7 +103,11 @@ class Quickpay_Payment_Model_Payment extends Mage_Payment_Model_Method_Abstract
         $table = $resource->getTableName('quickpaypayment_order_status');
         $read = $resource->getConnection('core_read');
 
-        $row = $read->fetchRow("SELECT cardtype FROM $table WHERE ordernum = '" . $orderid[0] . "'");
+        $query = "SELECT cardtype FROM {$table} WHERE ordernum = :order_number";
+        $binds = array(
+            'order_number' => $orderid[0],
+        );
+        $row = $read->fetchRow($query, $binds);
         if ($row['cardtype'] == 'dankort') {
             return true;
         }
@@ -128,7 +132,12 @@ class Quickpay_Payment_Model_Payment extends Mage_Payment_Model_Method_Abstract
             $resource = Mage::getSingleton('core/resource');
             $table = $resource->getTableName('quickpaypayment_order_status');
             $read = $resource->getConnection('core_read');
-            $row = $read->fetchRow("SELECT amount, currency FROM $table WHERE ordernum = '" . $orderid[0] . "'");
+
+            $query = "SELECT amount, currency FROM {$table} WHERE ordernum = :order_number";
+            $binds = array(
+                'order_number' => $orderid[0],
+            );
+            $row = $read->fetchRow($query, $binds);
 
             return $this->getConfigData('title') . " - " . Mage::helper('quickpaypayment')->__('Maks beløb:') . " " . $row['amount'] / 100 . " " . $row['currency'];
         }

@@ -44,7 +44,13 @@ class Quickpay_Payment_Model_Observer
         $resource = Mage::getSingleton('core/resource');
         $connection = $resource->getConnection('core_read');
         $table = $resource->getTableName('quickpaypayment_order_status');
-        if ($orders = $connection->fetchAll("SELECT * FROM $table WHERE ordernum = '$incrementId'")) {
+
+        $query = "SELECT * FROM $table WHERE ordernum = :order_number";
+        $binds = array(
+            'order_number' => $incrementId,
+        );
+
+        if ($orders = $connection->fetchAll($query, $binds)) {
             foreach ($orders as $order) {
                 if (($order['qpstat'] === "20000")/* && ($order['status'] == 1 || $order['status'] == 3)*/) return true;
             }
