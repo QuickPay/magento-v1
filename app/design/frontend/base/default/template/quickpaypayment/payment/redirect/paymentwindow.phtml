@@ -30,10 +30,7 @@ $parameters = array(
     "customer_email"               => $order->getCustomerEmail() ?: '',
 );
 
-$orderNumber = $payment->getCheckout()->getLastRealOrderId();
-$currency = $order->getOrderCurrency()->ToString();
-
-$result = Mage::helper('quickpaypayment')->qpCreatePayment($orderNumber, $currency);
+$result = Mage::helper('quickpaypayment')->qpCreatePayment($order);
 $result = Mage::helper('quickpaypayment')->qpCreatePaymentLink($result->id, $parameters);
 
 $paymentUrl = $result->url;
