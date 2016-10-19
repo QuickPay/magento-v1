@@ -187,7 +187,7 @@ class Quickpay_Payment_Helper_Data extends Mage_Core_Helper_Abstract
         return $result;
     }
 
-    public function capture($payment, $amount, $finalize = false)
+    public function capture($payment, $amount)
     {
         Mage::log('start capture', null, 'qp_capture.log');
         $session = Mage::getSingleton('adminhtml/session');

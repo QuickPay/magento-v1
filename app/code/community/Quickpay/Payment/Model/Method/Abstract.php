@@ -117,6 +117,15 @@ abstract class Quickpay_Payment_Model_Method_Abstract extends Mage_Payment_Model
      */
     public function capture(Varien_Object $payment, $amount)
     {
+        Mage::log('start capture', null, 'qp_capture.log');
+
+        try {
+            Mage::helper('quickpaypayment')->capture($payment, $amount);
+        } catch (Exception $e) {
+            Mage::throwException(Mage::helper('quickpaypayment')->__('Ikke muligt at hæve betalingen online, grundet denne fejl: %s', $e->getMessage()));
+        }
+
+        Mage::log('stop capture', null, 'qp_capture.log');
 
         return $this;
     }
