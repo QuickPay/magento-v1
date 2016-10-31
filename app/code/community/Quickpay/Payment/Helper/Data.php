@@ -114,7 +114,7 @@ class Quickpay_Payment_Helper_Data extends Mage_Core_Helper_Abstract
                 'item_no'    => $item->getSku(),
                 'item_name'  => $item->getName(),
                 'item_price' => (int) $item->getBasePriceInclTax(),
-                'vat_rate'   => $item->getTaxPercent(),
+                'vat_rate'   => $item->getTaxPercent() / 100,
             );
 
             $postArray['basket'][] = $product;
