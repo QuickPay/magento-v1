@@ -8,10 +8,4 @@
               <action method="addItem"><type>skin_css</type><name>css/quickpaypayment_grid.css</name></action>
         </reference>
     </default>
-    
-    <adminhtml_sales_order_invoice_new>
-        <reference name="before_body_end">
-            <block type="quickpaypayment/adminhtml_invoice_finalize" template="quickpaypayment/adminhtml/invoice/finalize.phtml"/>
-        </reference>
-    </adminhtml_sales_order_invoice_new>
 </layout>

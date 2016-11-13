@@ -1,5 +1,5 @@
 <?php
-class Quickpay_Payment_Block_Payment_Form_Viabill extends Mage_Payment_Block_Form
+class Quickpay_Payment_Block_Payment_Form_Klarna extends Mage_Payment_Block_Form
 {
     /**
      * Instructions text
@@ -35,6 +35,6 @@ class Quickpay_Payment_Block_Payment_Form_Viabill extends Mage_Payment_Block_For
      */
     public function getMethodLabelAfterHtml()
     {
-        return sprintf('<img src="%s" height="20" alt="ViaBill"/>', $this->getSkinUrl('images/quickpaypayment/viabill.png'));
+        return sprintf('<img src="%s" height="20" alt="Klarna"/>', $this->getSkinUrl('images/quickpaypayment/klarna.png'));
     }
 }

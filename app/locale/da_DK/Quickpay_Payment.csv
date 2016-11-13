@@ -92,6 +92,5 @@
 "Bruger og kode til quickpay er kun nødvendigt, hvis der skal vises gebyrer for kunden. For egen sikkerhed - anbefales det at oprette en bruger helt uden rettigheder i Quickpay Manageren til dette formål","Bruger og kode til quickpay er kun nødvendigt, hvis der skal vises gebyrer for kunden. For egen sikkerhed - anbefales det at oprette en bruger helt uden rettigheder i Quickpay Manageren til dette formål"
 "Kode","Kode"
 "Sorteringsrækkefølge","Sorteringsrækkefølger"
-"Finalize transaction","Afslut transaktion"
 "Send e-mail Ordrebekræftelse. Aktivering af denne indstilling vil resultere i en email-bekræftelse sendes når betalingen er foretaget.","Send e-mail order confirmation. This results in a email confirmation, when the order has been paid."
 "Send e-mail Ordrebekræftelse før. Aktivering af denne indstilling vil resultere i en email-bekræftelse sendes før betalingen er foretaget.","Send e-mail order confirmation before. This results in an email confirmation before the order has been paid."

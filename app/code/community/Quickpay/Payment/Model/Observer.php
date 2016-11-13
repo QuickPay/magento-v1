@@ -15,16 +15,13 @@ class Quickpay_Payment_Model_Observer
     {
         Mage::log('start capture', null, 'qp_capture.log');
 
-        $session = Mage::getSingleton('adminhtml/session');
-
         try {
             $payment = $observer->getPayment()->getMethodInstance();
 
             if ($payment instanceof Quickpay_Payment_Model_Method_Abstract) {
                 $invoice = $observer->getInvoice();
-                $finalize = Mage::app()->getRequest()->getPost('qp_finalize', false);
                 Mage::log($invoice->getGrandTotal(), null, 'qp_capture.log');
-                Mage::helper('quickpaypayment')->capture($payment, $invoice->getGrandTotal(), $finalize);
+                Mage::helper('quickpaypayment')->capture($payment, $invoice->getGrandTotal());
                 $payment->processInvoice($invoice, $payment);
             } else {
                 throw new Exception(Mage::helper('quickpaypayment')->__('Max beløb der kan refunderes'));
@@ -197,28 +194,25 @@ class Quickpay_Payment_Model_Observer
      */
     public function onBlockHtmlBefore(Varien_Event_Observer $observer)
     {
-        $block = $observer->getBlock();
-        if (!isset($block)) return;
+        $block = $observer->getEvent()->getBlock();
+        if (! isset($block)) return;
 
-        switch ($block->getType()) {
-            case 'adminhtml/sales_order_grid':
+        if ($block->getType() === 'adminhtml/sales_order_grid') {
+            /* @var $block Mage_Adminhtml_Block_Sales_Order_Grid */
+            $block->addColumnAfter('fraudprobability', array(
+                'header'   => '',
+                'index'    => 'fraudprobability',
+                'type'     => 'action',
+                'filter'   => false,
+                'sortable' => false,
+                'width'    => '40px',
+                'weight'   => '100',
+                'renderer' => 'Quickpay_Payment_Model_Sales_Order_Grid_Fraudprobability',
+            ), 'status');
 
-                /* @var $block Mage_Adminhtml_Block_Sales_Order_Grid */
-                $block->addColumnAfter('fraudprobability', array(
-                    'header'   => '',
-                    'index'    => 'fraudprobability',
-                    'type'     => 'action',
-                    'filter'   => false,
-                    'sortable' => false,
-                    'width'    => '40px',
-                    'weight'   => '100',
-                    'renderer' => 'Quickpay_Payment_Model_Sales_Order_Grid_Fraudprobability',
-                ), 'status');
-
-                // order columns
-                $block->addColumnsOrder('fraudprobability', 'massaction')->sortColumnsByOrder();
-                $block->addColumnsOrder('massaction', 'fraudprobability')->sortColumnsByOrder();
-                break;
+            // order columns
+            $block->addColumnsOrder('fraudprobability', 'massaction')->sortColumnsByOrder();
+            $block->addColumnsOrder('massaction', 'fraudprobability')->sortColumnsByOrder();
         }
     }
 }

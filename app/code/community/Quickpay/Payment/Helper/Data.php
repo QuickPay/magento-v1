@@ -495,4 +495,9 @@ class Quickpay_Payment_Helper_Data extends Mage_Core_Helper_Abstract
             }
         }
     }
+
+    public function getInstalledVersion()
+    {
+        return (string)Mage::getConfig()->getNode()->modules->Quickpay_Payment->version;
+    }
 }

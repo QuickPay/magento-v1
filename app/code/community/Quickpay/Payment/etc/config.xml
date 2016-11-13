@@ -201,6 +201,13 @@
                 <allowspecific>0</allowspecific>
                 <instructions>Pay with MobilePay</instructions>
             </quickpay_mobilepay>
+            <quickpay_klarna>
+                <active>0</active>
+                <model>quickpaypayment/method_klarna</model>
+                <title>QuickPay Klarna</title>
+                <allowspecific>0</allowspecific>
+                <instructions>Pay with Klarna</instructions>
+            </quickpay_klarna>
         </payment>
         <web>
             <session>
