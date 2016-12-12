@@ -486,11 +486,13 @@ class Quickpay_Payment_Helper_Data extends Mage_Core_Helper_Abstract
                     // get it's ID
 
                     $stock = Mage::getModel('cataloginventory/stock_item')->loadByProduct($product_id);
-                    // Load the stock for this product
-                    $stock->setQty($stock->getQty() - $quantity);
-                    // Set to new Qty
-                    $stock->save();
-                    // Save
+                    if ($stock->getId()) {
+                        // Load the stock for this product
+                        $stock->setQty($stock->getQty() - $quantity);
+                        // Set to new Qty
+                        $stock->save();
+                        // Save
+                    }
                 }
             }
         }
