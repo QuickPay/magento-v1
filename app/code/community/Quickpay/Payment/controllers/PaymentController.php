@@ -27,12 +27,6 @@ class Quickpay_Payment_PaymentController extends Mage_Core_Controller_Front_Acti
         //Save quote id in session for retrieval later
         $session->setQuickpayQuoteId($session->getQuoteId());
 
-        $order = Mage::getModel('sales/order')->loadByIncrementId($incrementId);
-
-        $order->addStatusToHistory(Mage::getModel('quickpaypayment/payment')->getConfigData('order_status'), $this->__("Ordren er oprettet og afventer betaling."));
-
-        $order->save();
-
         $block = Mage::getSingleton('core/layout')->createBlock('quickpaypayment/payment_redirect');
         $block->toHtml();
 
