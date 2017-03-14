@@ -1,19 +1,19 @@
 <?php
 class Quickpay_Payment_PaymentController extends Mage_Core_Controller_Front_Action
 {
-    protected function _expireAjax()
-    {
-        if (! $this->_getSession()->getQuote()->hasItems()) {
-            $this->getResponse()->setHeader('HTTP/1.1', '403 Session Expired');
-            exit ;
-        }
-    }
-
+    /**
+     * Get payment method
+     *
+     * @return Quickpay_Payment_Model_Payment
+     */
     public function getPayment()
     {
         return Mage::getSingleton('quickpaypayment/payment');
     }
 
+    /**
+     * Handle redirect to QuickPay
+     */
     public function redirectAction()
     {
         $session = $this->_getSession();
@@ -34,6 +34,9 @@ class Quickpay_Payment_PaymentController extends Mage_Core_Controller_Front_Acti
         $session->unsRedirectUrl();
     }
 
+    /**
+     * Handle customer cancelling payment
+     */
     public function cancelAction()
     {
         //Read quote id from session and attempt to restore
@@ -51,16 +54,19 @@ class Quickpay_Payment_PaymentController extends Mage_Core_Controller_Front_Acti
         $this->_redirect('checkout/cart');
     }
 
+    /**
+     * Handle customer being redirected from QuickPay
+     */
     public function successAction()
     {
         $order = Mage::getModel('sales/order')->loadByIncrementId($this->_getSession()->getLastRealOrderId());
 
         $payment = Mage::getModel('quickpaypayment/payment');
 
-        $quoteID = Mage::getSingleton("checkout/cart")->getQuote()->getId();
+        $quoteID = Mage::getSingleton('checkout/cart')->getQuote()->getId();
 
         if ($quoteID) {
-            $quote = Mage::getModel("sales/quote")->load($quoteID);
+            $quote = Mage::getModel('sales/quote')->load($quoteID);
             $quote->setIsActive(false)->save();
         }
 
@@ -86,6 +92,11 @@ class Quickpay_Payment_PaymentController extends Mage_Core_Controller_Front_Acti
         $this->_redirect('checkout/onepage/success');
     }
 
+    /**
+     * Handle callback from QuickPay
+     *
+     * @return $this
+     */
     public function callbackAction()
     {
         Mage::log("Logging callback data", null, 'qp_callback.log');
@@ -108,8 +119,8 @@ class Quickpay_Payment_PaymentController extends Mage_Core_Controller_Front_Acti
 
             // Save the order into the quickpaypayment_order_status table
             // IMPORTANT to update the status as 1 to ensure that the stock is handled correctly!
-            if (($request->accepted && $operation->type == 'authorize' && $operation->qp_status_code == "20000") || ($operation->type == 'authorize' && $operation->qp_status_code == "20200" && $operation->pending == TRUE)) {
-                if ($operation->pending == TRUE) {
+            if (($request->accepted && $operation->type == 'authorize' && $operation->qp_status_code == "20000") || ($operation->type == 'authorize' && $operation->qp_status_code == "20200" && $operation->pending == true)) {
+                if ($operation->pending == true) {
                     Mage::log('Transaction accepted but pending', null, 'qp_callback.log');
                 } else {
                     Mage::log('Transaction accepted', null, 'qp_callback.log');
@@ -185,6 +196,7 @@ class Quickpay_Payment_PaymentController extends Mage_Core_Controller_Front_Acti
                 }
 
                 $payment = Mage::getModel('quickpaypayment/payment');
+
                 // TODO: Consider to set pending payments in another state, must be handled in the api functions
                 if ($order->getStatus() != $payment->getConfigData('order_status_after_payment')) {
                     $order->setState(Mage_Sales_Model_Order::STATE_PROCESSING, $payment->getConfigData('order_status_after_payment'));
@@ -197,7 +209,7 @@ class Quickpay_Payment_PaymentController extends Mage_Core_Controller_Front_Acti
                  * If test mode is disabled and the order is placed with a test card, reject it
                  * We wait until this moment since qpCancel will fail without a row in quickpaypayment_order_status
                  */
-                if (! $payment->getConfigData('testmode') && $request->test_mode == 1) {
+                if (!$payment->getConfigData('testmode') && $request->test_mode == 1) {
                     Mage::log('Attempted callback with test card while testmode is disabled for order #' . $order->getIncrementId(), null, 'qp_debug.log');
                     //Cancel order
                     if ($order->canCancel()) {
@@ -218,17 +230,6 @@ class Quickpay_Payment_PaymentController extends Mage_Core_Controller_Front_Acti
                 if ((int)Mage::getStoreConfig('cataloginventory/item_options/manage_stock') == 1) {
                     Mage::helper('quickpaypayment')->removeFromStock($order->getIncrementId());
                 }
-            } else {
-                Mage::log('Transaction not ok', null, 'qp_callback.log');
-                $msg = "Der er fejl ved et betalings forsoeg:<br/>";
-                $msg .= "Info: <br/>";
-                $msg .= "qpstat: " . ((isset($operation->qp_status_code)) ? $operation->qp_status_code : '') . "<br/>";
-                $msg .= "qpmsg: " . ((isset($operation->qp_status_msg)) ? $operation->qp_status_msg : '') . "<br/>";
-                $msg .= "chstat: " . ((isset($operation->aq_status_code)) ? $operation->aq_status_code : '') . "<br/>";
-                $msg .= "chstatmsg: " . ((isset($operation->aq_status_msg)) ? $operation->aq_status_msg : '') . "<br/>";
-                $msg .= "amount: " . ((isset($operation->amount)) ? $operation->amount : '') . "<br/>";
-                $order->addStatusToHistory($order->getStatus(), $msg);
-                $order->save();
             }
         } else {
             $this->getResponse()->setBody('Checksum mismatch.');

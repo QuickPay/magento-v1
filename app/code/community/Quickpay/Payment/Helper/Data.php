@@ -8,7 +8,12 @@ class Quickpay_Payment_Helper_Data extends Mage_Core_Helper_Abstract
     protected $format = "application/json";
 
     /**
-     * Send a request to Quickpay.
+     * Perform a POST request
+     *
+     * @param $resource
+     * @param array $postdata
+     * @param string $synchronized
+     * @return string
      */
     protected function request($resource, $postdata = array(), $synchronized = "?synchronized")
     {
@@ -39,6 +44,13 @@ class Quickpay_Payment_Helper_Data extends Mage_Core_Helper_Abstract
         return $request->getBody();
     }
 
+    /**
+     * Perform a PUT request
+     *
+     * @param $resource
+     * @param array $postdata
+     * @return string
+     */
     protected function put($resource, $postdata = array())
     {
         $client = new Zend_Http_Client();
@@ -69,7 +81,10 @@ class Quickpay_Payment_Helper_Data extends Mage_Core_Helper_Abstract
     }
 
     /**
-     * Create a payment at the quickpay gateway
+     * Create a Payment
+     *
+     * @param Mage_Sales_Model_Order $order
+     * @return mixed|string
      */
     public function qpCreatePayment(Mage_Sales_Model_Order $order)
     {
@@ -129,8 +144,12 @@ class Quickpay_Payment_Helper_Data extends Mage_Core_Helper_Abstract
     }
 
     /**
-    * Create a payment link at the quickpay gateway
-    */
+     * Create a Payment Link
+     *
+     * @param $id
+     * @param $array
+     * @return mixed|string
+     */
     function qpCreatePaymentLink($id, $array)
     {
         $storeId = Mage::app()->getStore()->getStoreId();
@@ -141,7 +160,12 @@ class Quickpay_Payment_Helper_Data extends Mage_Core_Helper_Abstract
     }
 
     /**
-     * Capture a payment at the quickpay gateway
+     * Capture Payment
+     *
+     * @param $id
+     * @param $amount
+     * @param null $extras
+     * @return mixed|string
      */
     function qpCapture($id, $amount, $extras = null)
     {
@@ -158,7 +182,12 @@ class Quickpay_Payment_Helper_Data extends Mage_Core_Helper_Abstract
     }
 
     /**
-     * Refund a payment at the quickpay gateway
+     * Refund Payment
+     *
+     * @param $id
+     * @param $amount
+     * @param null $extras
+     * @return mixed|string
      */
     function qpRefund($id, $amount, $extras = null)
     {
@@ -175,7 +204,10 @@ class Quickpay_Payment_Helper_Data extends Mage_Core_Helper_Abstract
     }
 
     /**
-     * Cancel a payment at the quickpay gateway
+     * Cancel Payment
+     *
+     * @param $id
+     * @return mixed|string
      */
     function qpCancel($id)
     {
@@ -187,6 +219,12 @@ class Quickpay_Payment_Helper_Data extends Mage_Core_Helper_Abstract
         return $result;
     }
 
+    /**
+     * Capture Payment
+     *
+     * @param $payment
+     * @param $amount
+     */
     public function capture($payment, $amount)
     {
         Mage::log('start capture', null, 'qp_capture.log');
@@ -261,6 +299,12 @@ class Quickpay_Payment_Helper_Data extends Mage_Core_Helper_Abstract
         Mage::log('stop capture', null, 'qp_capture.log');
     }
 
+    /**
+     * Refund Payment
+     *
+     * @param $orderid
+     * @param $refundtotal
+     */
     public function refund($orderid, $refundtotal)
     {
         $order = Mage::getModel('sales/order')->load($orderid);
@@ -328,6 +372,11 @@ class Quickpay_Payment_Helper_Data extends Mage_Core_Helper_Abstract
         $order->save();
     }
 
+    /**
+     * Cancel Payment
+     *
+     * @param Mage_Sales_Model_Order $order
+     */
     public function cancel(Mage_Sales_Model_Order $order)
     {
         $orderid = explode("-", $order->getIncrementId());
@@ -382,6 +431,14 @@ class Quickpay_Payment_Helper_Data extends Mage_Core_Helper_Abstract
         $order->save();
     }
 
+    /**
+     * Create transaction
+     *
+     * @param $order
+     * @param $transactionId
+     * @param $type
+     * @return false|Mage_Core_Model_Abstract
+     */
     public function createTransaction($order, $transactionId, $type)
     {
         $transaction = Mage::getModel('sales/order_payment_transaction');
@@ -405,6 +462,12 @@ class Quickpay_Payment_Helper_Data extends Mage_Core_Helper_Abstract
         return $transaction;
     }
 
+    /**
+     * Get row from quickpay_order_status table
+     *
+     * @param $order_id
+     * @return bool
+     */
     public function getQuickPay($order_id)
     {
         if ($order_id) {
@@ -498,8 +561,13 @@ class Quickpay_Payment_Helper_Data extends Mage_Core_Helper_Abstract
         }
     }
 
+    /**
+     * Get installed version of extension
+     *
+     * @return string
+     */
     public function getInstalledVersion()
     {
-        return (string)Mage::getConfig()->getNode()->modules->Quickpay_Payment->version;
+        return (string) Mage::getConfig()->getNode()->modules->Quickpay_Payment->version;
     }
 }
