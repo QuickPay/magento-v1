@@ -7,4 +7,4 @@ Magento Quickpay Payment extension provides an easy way to integrate the QuickPa
 
 Type       | Value
 ---------- | ------------------
-Magento    | 1.6.0.0 - 1.9.2.1
+Magento    | 1.6.0.0 - 1.9.3.X
