@@ -10,7 +10,7 @@ class Quickpay_Payment_Helper_Checkout extends Mage_Core_Helper_Abstract
     {
         $order = $this->_getSession()->getLastRealOrder();
 
-        if ($order->getId()) {
+        if ($order && $order->getId()) {
             $quote = Mage::getModel('sales/quote')->load($order->getQuoteId());
             if ($quote->getId()) {
                 $quote->setIsActive(1)
@@ -23,6 +23,7 @@ class Quickpay_Payment_Helper_Checkout extends Mage_Core_Helper_Abstract
                 return true;
             }
         }
+
         return false;
     }
 
