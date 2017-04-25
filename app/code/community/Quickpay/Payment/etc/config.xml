@@ -58,23 +58,14 @@
                     </module>
                 </observers>
             </checkout_type_multishipping_create_orders_single>
-            <sales_order_creditmemo_refund>
+            <sales_order_place_after>
                 <observers>
                     <module>
                         <type>singleton</type>
                         <class>Quickpay_Payment_Model_Observer</class>
-                        <method>returnTranscationAmount</method>
+                        <method>saveOrder</method>
                     </module>
                 </observers>
-            </sales_order_creditmemo_refund>
-            <sales_order_place_after>
-            <observers>
-                <module>
-                    <type>singleton</type>
-                    <class>Quickpay_Payment_Model_Observer</class>
-                    <method>saveOrder</method>
-                </module>
-            </observers>
             </sales_order_place_after>
         </events>
         <resources>

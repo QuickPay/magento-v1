@@ -12,6 +12,7 @@ abstract class Quickpay_Payment_Model_Method_Abstract extends Mage_Payment_Model
 
     /**
      * Allowed currency types
+     *
      * @var array
      */
     protected $_allowCurrencyCode = array(
@@ -126,6 +127,18 @@ abstract class Quickpay_Payment_Model_Method_Abstract extends Mage_Payment_Model
         }
 
         Mage::log('stop capture', null, 'qp_capture.log');
+
+        return $this;
+    }
+
+    public function refund(Varien_Object $payment, $amount)
+    {
+        try {
+            $order = $payment->getOrder();
+            Mage::helper('quickpaypayment')->refund($order, $amount);
+        } catch (Exception $e) {
+            Mage::getSingleton('adminhtml/session')->addException($e, Mage::helper('quickpaypayment')->__('Ikke muligt at refundere betalingen online, grundet denne fejl: %s', $e->getMessage()));
+        }
 
         return $this;
     }

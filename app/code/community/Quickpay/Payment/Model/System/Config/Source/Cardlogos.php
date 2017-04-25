@@ -9,22 +9,6 @@ class Quickpay_Payment_Model_System_Config_Source_Cardlogos
                 'label' => Mage::helper('quickpaypayment')->__('Dankort')
             ),
             array(
-                'value' => 'edankort',
-                'label' => Mage::helper('quickpaypayment')->__('eDankort')
-            ),
-            array(
-                'value' => 'danskenetbetaling',
-                'label' => Mage::helper('quickpaypayment')->__('Danske Netbetaling')
-            ),
-            array(
-                'value' => 'nordea',
-                'label' => Mage::helper('quickpaypayment')->__('Nordea e-betaling')
-            ),
-            array(
-                'value' => 'ewire',
-                'label' => Mage::helper('quickpaypayment')->__('EWIRE')
-            ),
-            array(
                 'value' => 'forbrugsforeningen',
                 'label' => Mage::helper('quickpaypayment')->__('Forbrugsforeningen')
             ),

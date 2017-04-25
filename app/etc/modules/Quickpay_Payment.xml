@@ -5,7 +5,6 @@
             <active>true</active>
             <codePool>community</codePool>
             <depends>
-                <Mage_Paygate/>
                 <Mage_Sales/>
                 <Mage_Checkout/>
             </depends>

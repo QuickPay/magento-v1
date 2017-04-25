@@ -55,43 +55,6 @@ class Quickpay_Payment_Model_Observer
         return false;
     }
 
-    public function returnTranscationAmount($observer)
-    {
-        $session = Mage::getSingleton('adminhtml/session');
-        try {
-            $creditmemo = $observer->getEvent()->getCreditmemo();
-            $refundtotal = $creditmemo->getGrandTotal();
-
-            // Ignore refund if done in 5 seconds with same amount
-            // This makes the refund behave well, if a messy extension fires the sales_order_creditmemo_refund event twice or more
-            $previousCall = $session->getTimeAndAmount();
-            $nowCall = array('time' => time(),'amount' => $refundtotal);
-            $session->setTimeAndAmount($nowCall);
-            if (count($previousCall) > 0) {
-                $timeSpacing = $nowCall['time'] - $previousCall['time'];
-                $amountSpacing = $previousCall['amount'] - $nowCall['amount'];
-            }
-
-            $ignoreRefund = true;
-            if (isset($timeSpacing) && isset($amountSpacing)) {
-                if ($timeSpacing < 5 && $amountSpacing == 0){
-                    $ignoreRefund = false;
-                }
-            }
-
-            $order = Mage::getModel('sales/order')->load($creditmemo->getOrderId());
-            $payment = $order->getPayment()->getMethodInstance();
-
-            if ($payment instanceof Quickpay_Payment_Model_Method_Abstract && $ignoreRefund) {
-                Mage::helper('quickpaypayment')->refund($creditmemo->getOrderId(), $refundtotal);
-            }
-
-        } catch (Exception $e) {
-            $session->addException($e, Mage::helper('quickpaypayment')->__('Ikke muligt at refundere betalingen online, grundet denne fejl: %s', $e->getMessage()));
-        }
-        return $this;
-    }
-
     public function cancel($observer)
     {
         $session = Mage::getSingleton('adminhtml/session');

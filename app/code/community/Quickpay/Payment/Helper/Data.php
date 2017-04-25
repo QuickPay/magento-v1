@@ -305,9 +305,8 @@ class Quickpay_Payment_Helper_Data extends Mage_Core_Helper_Abstract
      * @param $orderid
      * @param $refundtotal
      */
-    public function refund($orderid, $refundtotal)
+    public function refund(Mage_Sales_Model_Order $order, $refundtotal)
     {
-        $order = Mage::getModel('sales/order')->load($orderid);
         $orderid = explode("-", $order->getIncrementId());
 
         $session = Mage::getSingleton('adminhtml/session');
