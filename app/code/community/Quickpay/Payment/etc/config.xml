@@ -158,13 +158,8 @@
                 <order_status>pending</order_status>
                 <order_status_after_payment>processing</order_status_after_payment>
                 <sort_order>1</sort_order>
-                <merchantnumber>ENTER YOUR MERCHANTNUMBER HERE</merchantnumber>
                 <agreementid>ENTER YOUR AGREEMENT ID HERE</agreementid>
                 <cardtype>0</cardtype>
-                <brandingid></brandingid>
-                <brandingidchecked></brandingidchecked>
-                <googleanalyticstracking></googleanalyticstracking>
-                <googleanalyticsclientid></googleanalyticsclientid>
                 <sendmailorderconfirmation>1</sendmailorderconfirmation>
                 <sendmailorderconfirmationbefore>1</sendmailorderconfirmationbefore>
                 <cardlogos>dankort,visa,mastercard,maestro</cardlogos>
