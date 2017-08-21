@@ -93,6 +93,14 @@ class Quickpay_Payment_PaymentController extends Mage_Core_Controller_Front_Acti
     }
 
     /**
+     * Handle customer being redirected from QuickPay
+     */
+    public function linksuccessAction()
+    {
+        echo "Tak for din betaling";
+    }
+
+    /**
      * Handle callback from QuickPay
      *
      * @return $this
@@ -160,7 +168,7 @@ class Quickpay_Payment_PaymentController extends Mage_Core_Controller_Front_Acti
                 $resource = Mage::getSingleton('core/resource');
                 $table = $resource->getTableName('quickpaypayment_order_status');
 
-                $query = "UPDATE {$table} SET transaction = :transaction, status = :status, pbsstat = :pbsstat, qpstat = :qpstat, qpstatmsg = :qpstatmsg, chstat = :chstat, chstatmsg = :chstatmsg, merchantemail = :merchantemail, merchant = :merchant, amount = :amount, currency = :currency, time = :time, md5check = :md5check, cardtype = :cardtype, cardnumber = :cardnumber, splitpayment = :splitpayment, fraudprobability = :fraudprobability, fraudremarks = :fraudremarks, fraudreport = :fraudreport, fee = :fee, capturedAmount = :capturedAmount, refundedAmount = :refundedAmount WHERE ordernum = :order_id";
+                $query = "UPDATE {$table} SET transaction = :transaction, status = :status, pbsstat = :pbsstat, qpstat = :qpstat, qpstatmsg = :qpstatmsg, chstat = :chstat, chstatmsg = :chstatmsg, merchantemail = :merchantemail, merchant = :merchant, amount = :amount, currency = :currency, time = :time, md5check = :md5check, cardtype = :cardtype, cardnumber = :cardnumber, acquirer = :acquirer, is_3d_secure = :is_3d_secure, splitpayment = :splitpayment, fraudprobability = :fraudprobability, fraudremarks = :fraudremarks, fraudreport = :fraudreport, fee = :fee, capturedAmount = :capturedAmount, refundedAmount = :refundedAmount WHERE ordernum = :order_id";
                 $binds = array(
                     'transaction'      => isset($request->id) ? $request->id : '',
                     'status'           => isset($request->accepted) ? $request->accepted : '',
@@ -176,7 +184,9 @@ class Quickpay_Payment_PaymentController extends Mage_Core_Controller_Front_Acti
                     'time'             => isset($request->created_at) ? $request->created_at : '',
                     'md5check'         => $this->getRequest()->getParam('md5check', ''),
                     'cardtype'         => isset($request->metadata->brand) ? $request->metadata->brand : '',
-                    'cardnumber'       => $this->getRequest()->getParam('cardnumber', ''),
+                    'cardnumber'       => sprintf('%sXXXXXX%s', $request->metadata->bin, $request->metadata->last4),
+                    'acquirer'         => $request->acquirer,
+                    'is_3d_secure'     => (bool) $request->metadata->is_3d_secure,
                     'splitpayment'     => $this->getRequest()->getParam('splitpayment', ''),
                     'fraudprobability' => $fraudProbability,
                     'fraudremarks'     => isset($fraudRemarks) ? $fraudRemarks : '',
@@ -186,6 +196,7 @@ class Quickpay_Payment_PaymentController extends Mage_Core_Controller_Front_Acti
                     'refundedAmount'   => '0',
                     'order_id'         => $request->order_id,
                 );
+
                 Mage::log($query, null, 'qp_callback.log');
 
                 $write = $resource->getConnection('core_write');

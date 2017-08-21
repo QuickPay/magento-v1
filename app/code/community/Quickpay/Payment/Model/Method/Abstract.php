@@ -58,11 +58,16 @@ abstract class Quickpay_Payment_Model_Method_Abstract extends Mage_Payment_Model
     {
         parent::validate();
 
-        if (! Mage::app()->getFrontController()->getAction() instanceof Mage_Adminhtml_Sales_Order_EditController) {
-            $currency_code = $this->getQuote()->getBaseCurrencyCode();
-            if (!in_array($currency_code, $this->_allowCurrencyCode)) {
-                Mage::throwException(Mage::helper('quickpaypayment')->__('Valutakoden (%s) er ikke kompatible med Quickpay', $currency_code));
-            }
+        $paymentInfo = $this->getInfoInstance();
+
+        if ($paymentInfo instanceof Mage_Sales_Model_Order_Payment) {
+            $currency_code = $paymentInfo->getOrder()->getBaseCurrencyCode();
+        } else {
+            $currency_code = $paymentInfo->getQuote()->getBaseCurrencyCode();
+        }
+
+        if (!in_array($currency_code, $this->_allowCurrencyCode)) {
+            Mage::throwException(Mage::helper('quickpaypayment')->__('Valutakoden (%s) er ikke kompatible med Quickpay', $currency_code));
         }
 
         return $this;

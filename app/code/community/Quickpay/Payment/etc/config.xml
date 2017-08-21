@@ -2,7 +2,7 @@
 <config>
     <modules>
         <Quickpay_Payment>
-            <version>3.3.5</version>
+            <version>3.4.0</version>
         </Quickpay_Payment>
     </modules>
     <global>
@@ -19,9 +19,9 @@
             <quickpaypayment_mysql4>
                 <class>Quickpay_Payment_Model_Mysql4</class>
                 <entities>
-                    <api_debug>
-                        <table>Quickpay_api_debug</table>
-                    </api_debug>
+                    <order_status>
+                        <table>quickpaypayment_order_status</table>
+                    </order_status>
                 </entities>
             </quickpaypayment_mysql4>
         </models>
@@ -30,6 +30,15 @@
                 <class>Quickpay_Payment_Helper</class>
             </quickpaypayment>
         </helpers>
+        <template>
+            <email>
+                <quickpay_payment_link translate="label" module="wishlist">
+                    <label>QuickPay Payment Link</label>
+                    <file>quickpay_payment_link.html</file>
+                    <type>html</type>
+                </quickpay_payment_link>
+            </email>
+        </template>
         <events>
             <controller_action_postdispatch_checkout_onepage_savePayment>
                 <observers>
@@ -139,6 +148,14 @@
                     </quickpaypayment>
                 </observers>
             </adminhtml_block_html_before>
+            <checkout_submit_all_after>
+                <observers>
+                    <quickpaypayment>
+                        <class>quickpaypayment/observer</class>
+                        <method>onCheckoutSubmitAllAfter</method>
+                    </quickpaypayment>
+                </observers>
+            </checkout_submit_all_after>
         </events>
         <layout>
             <updates>
@@ -195,14 +212,5 @@
                 <instructions>Pay with Klarna</instructions>
             </quickpay_klarna>
         </payment>
-        <web>
-            <session>
-                <use_remote_addr>0</use_remote_addr>
-            </session>
-        </web>
     </default>
-    <interest_form>
-        <label>lead capture form</label>
-        <template>page/leadcapture.phtml</template>
-    </interest_form>
 </config>

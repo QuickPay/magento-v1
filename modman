@@ -5,7 +5,8 @@ app/design/adminhtml/default/default/layout/*                      app/design/ad
 app/design/adminhtml/default/default/template/quickpaypayment/*    app/design/adminhtml/default/default/template/quickpaypayment/
 app/etc/modules/*                                                  app/etc/modules/
 app/locale/da_DK/*                                                 app/locale/da_DK/
-app/locale/en_US/*                                                 app/locale/en_US/
+app/locale/en_US/Quickpay_Payment.csv                              app/locale/en_US/
+app/locale/en_US/template/email/*                                  app/locale/en_US/template/email/
 js/quickpaypayment/*                                               js/quickpaypayment/
 skin/frontend/base/default/images/quickpaypayment/*                skin/frontend/base/default/images/quickpaypayment/
 skin/adminhtml/default/default/images/quickpaypayment/*            skin/adminhtml/default/default/images/quickpaypayment/

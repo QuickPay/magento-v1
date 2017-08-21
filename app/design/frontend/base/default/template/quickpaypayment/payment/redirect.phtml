@@ -1,10 +1,9 @@
 <?php
-/* Upgraded to version 10 of protocol */
+/** @var Quickpay_Payment_Block_Payment_Redirect $this */
+/** @var Quickpay_Payment_Model_Payment $payment */
 $payment = Mage::getModel('quickpaypayment/payment');
 
-$order = Mage::getModel('sales/order');
-$order->loadByIncrementId($payment->getCheckout()->getLastRealOrderId());
-
+$order = $this->getOrder();
 $quickpay_state = Mage::getSingleton('core/session')->getQuickpayState();
 
 // Get array of selections
@@ -35,7 +34,7 @@ $result = Mage::helper('quickpaypayment')->qpCreatePaymentLink($result->id, $par
 
 $paymentUrl = $result->url;
 ?>
-<script type="text/javascript">
-    window.location.href = "<?php echo $paymentUrl; ?>";
-</script>
+    <script type="text/javascript">
+        window.location.href = "<?php echo $paymentUrl; ?>";
+    </script>
 <?php exit(); ?>

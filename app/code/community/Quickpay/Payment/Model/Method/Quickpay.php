@@ -11,4 +11,9 @@ class Quickpay_Payment_Model_Method_Quickpay extends Quickpay_Payment_Model_Meth
 
         return $this->getConfigData('payment_method');
     }
+
+    public function canUseInternal()
+    {
+        return true;
+    }
 }

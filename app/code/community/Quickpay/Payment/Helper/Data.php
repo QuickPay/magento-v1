@@ -88,6 +88,11 @@ class Quickpay_Payment_Helper_Data extends Mage_Core_Helper_Abstract
      */
     public function qpCreatePayment(Mage_Sales_Model_Order $order)
     {
+        $resource = Mage::getSingleton('core/resource');
+        $connection = $resource->getConnection('core_write');
+        $table = $resource->getTableName('quickpaypayment_order_status');
+        $connection->insert($table, array('ordernum' => $order->getIncrementId()));
+
         $postArray = array();
 
         $postArray['order_id'] = $order->getIncrementId();
@@ -97,7 +102,7 @@ class Quickpay_Payment_Helper_Data extends Mage_Core_Helper_Abstract
         $billingAddress = $order->getBillingAddress();
 
         //Add shipping_address
-        if ($shippingAddress) {
+        if ($shippingAddress) { 
             $postArray['shipping_address']['name'] = $shippingAddress->getName();
             $postArray['shipping_address']['street'] = $shippingAddress->getStreetFull();
             $postArray['shipping_address']['city'] = $shippingAddress->getCity();

@@ -11,85 +11,6 @@ class Quickpay_Payment_Model_Observer
         return $this;
     }
 
-    public function capture($observer)
-    {
-        Mage::log('start capture', null, 'qp_capture.log');
-
-        try {
-            $payment = $observer->getPayment()->getMethodInstance();
-
-            if ($payment instanceof Quickpay_Payment_Model_Method_Abstract) {
-                $invoice = $observer->getInvoice();
-                Mage::log($invoice->getGrandTotal(), null, 'qp_capture.log');
-                Mage::helper('quickpaypayment')->capture($payment, $invoice->getGrandTotal());
-                $payment->processInvoice($invoice, $payment);
-            } else {
-                throw new Exception(Mage::helper('quickpaypayment')->__('Max beløb der kan refunderes'));
-            }
-        } catch (Exception $e) {
-
-            Mage::throwException(Mage::helper('quickpaypayment')->__('Ikke muligt at hæve betalingen online, grundet denne fejl: %s',$e->getMessage()));
-            //throw new Exception("Failed to create Invoice on online capture");
-        }
-
-        Mage::log('stop capture', null, 'qp_capture.log');
-        return $this;
-    }
-
-    public function checkOrder($incrementId)
-    {
-        $resource = Mage::getSingleton('core/resource');
-        $connection = $resource->getConnection('core_read');
-        $table = $resource->getTableName('quickpaypayment_order_status');
-
-        $query = "SELECT * FROM $table WHERE ordernum = :order_number";
-        $binds = array(
-            'order_number' => $incrementId,
-        );
-
-        if ($orders = $connection->fetchAll($query, $binds)) {
-            foreach ($orders as $order) {
-                if (($order['qpstat'] === "20000")/* && ($order['status'] == 1 || $order['status'] == 3)*/) return true;
-            }
-        }
-        return false;
-    }
-
-    public function cancel($observer)
-    {
-        $session = Mage::getSingleton('adminhtml/session');
-
-        $order = $observer->getEvent()->getOrder();
-        if (!$order->getPayment()) return $this;
-        if (!$order->getPayment()->getMethodInstance()) return $this;
-        $payment = $order->getPayment()->getMethodInstance();
-
-        if (! $payment instanceof Quickpay_Payment_Model_Method_Abstract) {
-            return $this;
-        }
-
-        $qp_order_check = $this->checkOrder($order->getIncrementId());
-
-        try {
-            Mage::helper('quickpaypayment')->cancel($order->getId());
-        } catch (Exception $e) {
-            $session->addException($e, Mage::helper('quickpaypayment')->__('Ikke muligt at annullerer betalingen online, grundet denne fejl: %s', $e->getMessage()));
-        }
-        /*
-            if order does not exists in Quickpay table, or it was not autorized/captured, then the stock was not actually deducted,
-            because this module changes the logic to deduct stock only when payment is completed. Thus, we need to account for Magento
-            return-to-stock operation.
-        */
-        if (! $qp_order_check) {
-            if ((int)Mage::getStoreConfig('cataloginventory/options/can_subtract') == 1 &&
-                (int)Mage::getStoreConfig('cataloginventory/item_options/manage_stock') == 1
-            ) {
-                Mage::helper('quickpaypayment')->removeFromStock($order->getIncrementId());
-            }
-        }
-        return $this;
-    }
-
     public function addToStock($order)
     {
         $payment = Mage::getModel('quickpaypayment/payment');
@@ -177,5 +98,94 @@ class Quickpay_Payment_Model_Observer
             $block->addColumnsOrder('fraudprobability', 'massaction')->sortColumnsByOrder();
             $block->addColumnsOrder('massaction', 'fraudprobability')->sortColumnsByOrder();
         }
+    }
+
+    /**
+     * Send payment link to customer when admin creates an order
+     *
+     * @param Varien_Event_Observer $observer
+     */
+    public function onCheckoutSubmitAllAfter(Varien_Event_Observer $observer)
+    {
+        /** @var Mage_Sales_Model_Order $order */
+        $order = $observer->getEvent()->getOrder();
+        $payment = Mage::getSingleton('quickpaypayment/payment');
+
+        $parameters = array(
+            "agreement_id"                 => $payment->getConfigData("agreementid"),
+            "amount"                       => $order->getTotalDue() * 100,
+            "continueurl"                  => $this->getSuccessUrl($order->getStore()),
+            "cancelurl"                    => $this->getCancelUrl($order->getStore()),
+            "callbackurl"                  => $this->getCallbackUrl($order->getStore()),
+            "language"                     => $payment->calcLanguage(Mage::app()->getLocale()->getLocaleCode()),
+            "autocapture"                  => $payment->getConfigData('instantcapture'),
+            "autofee"                      => $payment->getConfigData('transactionfee'),
+            "payment_methods"              => $order->getPayment()->getMethodInstance()->getPaymentMethods(),
+            "google_analytics_tracking_id" => $payment->getConfigData('googleanalyticstracking'),
+            "google_analytics_client_id"   => $payment->getConfigData('googleanalyticsclientid'),
+            "customer_email"               => $order->getCustomerEmail() ?: '',
+        );
+
+        $result = Mage::helper('quickpaypayment')->qpCreatePayment($order);
+        $result = Mage::helper('quickpaypayment')->qpCreatePaymentLink($result->id, $parameters);
+
+        $paymentUrl = $result->url;
+
+        //Send payment link email to customer
+
+        /** @var Mage_Core_Model_Email_Template $mailTemplate */
+        $mailTemplate = Mage::getModel('core/email_template');
+
+        $emailVars = array(
+            'increment_id' => $order->getIncrementId(),
+            'paymentlink' => $paymentUrl,
+        );
+
+        $mailTemplate->setDesignConfig(array(
+            'area'  => 'frontend',
+            'store' => $order->getStoreId(),
+        ));
+
+        $mailTemplate->sendTransactional(
+            'quickpay_payment_link',
+            'sales',
+            $order->getBillingAddress()->getEmail(),
+            $order->getBillingAddress()->getFirstname() . ' ' . $order->getBillingAddress()->getLastname(),
+            $emailVars,
+            $order->getStoreId()
+        );
+
+        Mage::log($order->debug(), null, 'qp_order.log');
+
+    }
+
+    /**
+     * Get success url
+     *
+     * @return string
+     */
+    public function getSuccessUrl(Mage_Core_Model_Store $store)
+    {
+        return $store->getUrl('quickpaypayment/payment/linksuccess');
+    }
+
+    /**
+     * Get cancel url
+     *
+     * @return string
+     */
+    public function getCancelUrl(Mage_Core_Model_Store $store)
+    {
+        return $store->getUrl('quickpaypayment/payment/cancel');
+    }
+
+    /**
+     * Get callback url
+     *
+     * @return string
+     */
+    public function getCallbackUrl(Mage_Core_Model_Store $store)
+    {
+        return $store->getUrl('quickpaypayment/payment/callback');
     }
 }
