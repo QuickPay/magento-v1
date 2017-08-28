@@ -27,16 +27,31 @@ abstract class Quickpay_Payment_Model_Method_Abstract extends Mage_Payment_Model
         'YUM', 'ZAR', 'ZMK', 'ZWD'
     );
 
+    /**
+     * Get checkout session
+     *
+     * @return Mage_Checkout_Model_Session
+     */
     public function getCheckout()
     {
         return Mage::getSingleton('checkout/session');
     }
 
+    /**
+     * Get redirect url
+     *
+     * @return string
+     */
     public function getOrderPlaceRedirectUrl()
     {
         return Mage::getUrl('quickpaypayment/payment/redirect');
     }
 
+    /**
+     * Get active quote
+     *
+     * @return Mage_Sales_Model_Quote
+     */
     public function getQuote()
     {
         return $this->getCheckout()->getQuote();
@@ -53,7 +68,11 @@ abstract class Quickpay_Payment_Model_Method_Abstract extends Mage_Payment_Model
         return false;
     }
 
-    /*validate the currency code is avaialable to use for Quickpay or not*/
+    /**
+     * Validate if the currency code is avaialable to use for Quickpay or not
+     *
+     * @return $this
+     */
     public function validate()
     {
         parent::validate();
@@ -73,6 +92,10 @@ abstract class Quickpay_Payment_Model_Method_Abstract extends Mage_Payment_Model
         return $this;
     }
 
+    /**
+     * @param $lan
+     * @return mixed
+     */
     public function calcLanguage($lan)
     {
         $map_codes = array(
@@ -136,6 +159,14 @@ abstract class Quickpay_Payment_Model_Method_Abstract extends Mage_Payment_Model
         return $this;
     }
 
+    /**
+     * Refund payment
+     *
+     * @param Varien_Object $payment
+     * @param float $amount
+     *
+     * @return $this
+     */
     public function refund(Varien_Object $payment, $amount)
     {
         try {
@@ -178,6 +209,9 @@ abstract class Quickpay_Payment_Model_Method_Abstract extends Mage_Payment_Model
         return $this->void($payment);
     }
 
+    /**
+     * @return mixed|string
+     */
     public function getTitle()
     {
         // Tilføjer max beløb hvis vi er ved at ændre en order.
