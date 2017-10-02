@@ -127,7 +127,7 @@ class Quickpay_Payment_PaymentController extends Mage_Core_Controller_Front_Acti
 
             // Save the order into the quickpaypayment_order_status table
             // IMPORTANT to update the status as 1 to ensure that the stock is handled correctly!
-            if (($request->accepted && $operation->type == 'authorize' && $operation->qp_status_code == "20000") || ($operation->type == 'authorize' && $operation->qp_status_code == "20200" && $operation->pending == true)) {
+            if ($request->accepted && $operation->type == 'authorize') {
                 if ($operation->pending == true) {
                     Mage::log('Transaction accepted but pending', null, 'qp_callback.log');
                 } else {
@@ -208,7 +208,6 @@ class Quickpay_Payment_PaymentController extends Mage_Core_Controller_Front_Acti
 
                 $payment = Mage::getModel('quickpaypayment/payment');
 
-                // TODO: Consider to set pending payments in another state, must be handled in the api functions
                 if ($order->getStatus() != $payment->getConfigData('order_status_after_payment')) {
                     $order->setState(Mage_Sales_Model_Order::STATE_PROCESSING, $payment->getConfigData('order_status_after_payment'));
                     $order->save();
