@@ -98,6 +98,10 @@ class Quickpay_Payment_Helper_Data extends Mage_Core_Helper_Abstract
         $postArray['order_id'] = $order->getIncrementId();
         $postArray['currency'] = $order->getOrderCurrency()->ToString();
 
+        if ($textOnStatement = Mage::getStoreConfig('payment/quickpaypayment_payment/text_on_statement')) {
+            $postArray['text_on_statement'] = $textOnStatement;
+        }
+
         $shippingAddress = $order->getShippingAddress();
         $billingAddress = $order->getBillingAddress();
 
@@ -376,7 +380,7 @@ class Quickpay_Payment_Helper_Data extends Mage_Core_Helper_Abstract
             Mage::throwException(Mage::helper('quickpaypayment')->__('Max beløb der kan refunderes: %s', $qpOrderStatus['capturedAmount']));
         }
 
-        $order->addStatusToHistory($order->getStatus(), Mage::helper('quickpaypayment')->__('Kreditnota refunderede % online', number_format($refundtotal, 2, ",", "")), false);
+        $order->addStatusToHistory($order->getStatus(), Mage::helper('quickpaypayment')->__('Kreditnota refunderede %s online', number_format($refundtotal, 2, ",", "")), false);
         $order->save();
     }
 

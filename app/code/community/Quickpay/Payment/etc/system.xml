@@ -182,6 +182,16 @@
                             <show_in_website>1</show_in_website>
                             <show_in_store>1</show_in_store>
                         </sendmailorderconfirmationbefore>
+                        <text_on_statement translate="label comment">
+                            <label>Text on statement</label>
+                            <comment><![CDATA[Text that will be placed on cardholder’s bank statement (MAX 22 ASCII characters and <strong>only supported by Clearhaus currently</strong>).<br>Has to start with Default descriptor, as described in your agreement with Clearhaus]]></comment>
+                            <frontend_type>text</frontend_type>
+                            <validate>validate-length maximum-length-22</validate>
+                            <sort_order>80</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>1</show_in_store>
+                        </text_on_statement>
                         <handlestock translate="label comment">
                             <label>Håndtering af lager. Varene vil først trækkes fra lageret, når betalingen er gennemført.</label>
                             <comment>OBS! Annullering af ikke betalte ordre, vil give falske lagerantal, med mindre Magento
