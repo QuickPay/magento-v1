@@ -109,53 +109,54 @@ class Quickpay_Payment_Model_Observer
     {
         /** @var Mage_Sales_Model_Order $order */
         $order = $observer->getEvent()->getOrder();
-        $payment = Mage::getSingleton('quickpaypayment/payment');
 
-        $parameters = array(
-            "agreement_id"                 => $payment->getConfigData("agreementid"),
-            "amount"                       => $order->getTotalDue() * 100,
-            "continueurl"                  => $this->getSuccessUrl($order->getStore()),
-            "cancelurl"                    => $this->getCancelUrl($order->getStore()),
-            "callbackurl"                  => $this->getCallbackUrl($order->getStore()),
-            "language"                     => $payment->calcLanguage(Mage::app()->getLocale()->getLocaleCode()),
-            "autocapture"                  => $payment->getConfigData('instantcapture'),
-            "autofee"                      => $payment->getConfigData('transactionfee'),
-            "payment_methods"              => $order->getPayment()->getMethodInstance()->getPaymentMethods(),
-            "google_analytics_tracking_id" => $payment->getConfigData('googleanalyticstracking'),
-            "google_analytics_client_id"   => $payment->getConfigData('googleanalyticsclientid'),
-            "customer_email"               => $order->getCustomerEmail() ?: '',
-        );
+        if ($order->getPayment()->getMethodInstance() instanceof Quickpay_Payment_Model_Method_Abstract) {
+            $payment = Mage::getSingleton('quickpaypayment/payment');
 
-        $result = Mage::helper('quickpaypayment')->qpCreatePayment($order);
-        $result = Mage::helper('quickpaypayment')->qpCreatePaymentLink($result->id, $parameters);
+            $parameters = array(
+                "agreement_id"                 => $payment->getConfigData("agreementid"),
+                "amount"                       => $order->getTotalDue() * 100,
+                "continueurl"                  => $this->getSuccessUrl($order->getStore()),
+                "cancelurl"                    => $this->getCancelUrl($order->getStore()),
+                "callbackurl"                  => $this->getCallbackUrl($order->getStore()),
+                "language"                     => $payment->calcLanguage(Mage::app()->getLocale()->getLocaleCode()),
+                "autocapture"                  => $payment->getConfigData('instantcapture'),
+                "autofee"                      => $payment->getConfigData('transactionfee'),
+                "payment_methods"              => $order->getPayment()->getMethodInstance()->getPaymentMethods(),
+                "google_analytics_tracking_id" => $payment->getConfigData('googleanalyticstracking'),
+                "google_analytics_client_id"   => $payment->getConfigData('googleanalyticsclientid'),
+                "customer_email"               => $order->getCustomerEmail() ?: '',
+            );
 
-        $paymentUrl = $result->url;
+            $result = Mage::helper('quickpaypayment')->qpCreatePayment($order);
+            $result = Mage::helper('quickpaypayment')->qpCreatePaymentLink($result->id, $parameters);
 
-        //Send payment link email to customer
+            $paymentUrl = $result->url;
 
-        /** @var Mage_Core_Model_Email_Template $mailTemplate */
-        $mailTemplate = Mage::getModel('core/email_template');
+            //Send payment link email to customer
 
-        $emailVars = array(
-            'increment_id' => $order->getIncrementId(),
-            'paymentlink' => $paymentUrl,
-        );
+            /** @var Mage_Core_Model_Email_Template $mailTemplate */
+            $mailTemplate = Mage::getModel('core/email_template');
 
-        $mailTemplate->setDesignConfig(array(
-            'area'  => 'frontend',
-            'store' => $order->getStoreId(),
-        ));
+            $emailVars = array(
+                'increment_id' => $order->getIncrementId(),
+                'paymentlink' => $paymentUrl,
+            );
 
-        $mailTemplate->sendTransactional(
-            'quickpay_payment_link',
-            'sales',
-            $order->getBillingAddress()->getEmail(),
-            $order->getBillingAddress()->getFirstname() . ' ' . $order->getBillingAddress()->getLastname(),
-            $emailVars,
-            $order->getStoreId()
-        );
+            $mailTemplate->setDesignConfig(array(
+                'area'  => 'frontend',
+                'store' => $order->getStoreId(),
+            ));
 
-        Mage::log($order->debug(), null, 'qp_order.log');
+            $mailTemplate->sendTransactional(
+                'quickpay_payment_link',
+                'sales',
+                $order->getBillingAddress()->getEmail(),
+                $order->getBillingAddress()->getFirstname() . ' ' . $order->getBillingAddress()->getLastname(),
+                $emailVars,
+                $order->getStoreId()
+            );
+        }
 
     }
 
