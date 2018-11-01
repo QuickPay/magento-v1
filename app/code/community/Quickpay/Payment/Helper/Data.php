@@ -272,6 +272,7 @@ class Quickpay_Payment_Helper_Data extends Mage_Core_Helper_Abstract
             $this->apiKey = Mage::getStoreConfig('payment/quickpaypayment_payment/apikey', $storeId);
 
             $newCapturedAmount = $capturedAmount + ($amount * 100);
+
             try {
                 $result = $this->qpCapture($quickPayTransactionId, round($amount * 100));
             } catch (Exception $e) {
@@ -283,8 +284,8 @@ class Quickpay_Payment_Helper_Data extends Mage_Core_Helper_Abstract
 
             Mage::log($result, null, 'qp_capture.log');
 
-            if ($result->qp_status_code == "20000" && ($result->aq_status_code == "000" || $result->aq_status_code == "20000")) {
-                $session->addSuccess(Mage::helper('quickpaypayment')->__('Betalingen er hævet online.'));
+            if ($result->qp_status_code == "20000") {
+                $session->addSuccess(Mage::helper('quickpaypayment')->__('Betalingen for ordre %s er hævet online.', $order->getIncrementId()));
                 $write = $resource->getConnection('core_write');
 
                 $query = "UPDATE {$table} SET status = :status, time = :time, qpstat = :qpstat, qpstatmsg = :qpstatmsg, chstat = :chstat, chstatmsg = :chstatmsg, splitpayment = :splitpayment, capturedAmount = :capturedAmount WHERE ordernum = :order_number";

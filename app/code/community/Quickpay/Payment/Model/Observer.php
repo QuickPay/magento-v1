@@ -79,6 +79,7 @@ class Quickpay_Payment_Model_Observer
     public function onBlockHtmlBefore(Varien_Event_Observer $observer)
     {
         $block = $observer->getEvent()->getBlock();
+
         if (! isset($block)) return;
 
         if ($block->getType() === 'adminhtml/sales_order_grid') {
@@ -97,6 +98,12 @@ class Quickpay_Payment_Model_Observer
             // order columns
             $block->addColumnsOrder('fraudprobability', 'massaction')->sortColumnsByOrder();
             $block->addColumnsOrder('massaction', 'fraudprobability')->sortColumnsByOrder();
+
+            $massAction = $block->getMassactionBlock();
+            $massAction->addItem('quickpay_mass_capture', array(
+                'label' => 'Capture with QuickPay',
+                'url' => $block->getUrl('adminhtml/quickpay/massCapture')
+            ));
         }
     }
 

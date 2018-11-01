@@ -2,7 +2,7 @@
 <config>
     <modules>
         <Quickpay_Payment>
-            <version>3.4.3</version>
+            <version>3.4.4</version>
         </Quickpay_Payment>
     </modules>
     <global>
@@ -129,6 +129,17 @@
         </updates>
         </layout>
     </frontend>
+    <admin>
+        <routers>
+            <adminhtml>
+                <args>
+                    <modules>
+                        <Quickpay_Payment after="Mage_Adminhtml">Quickpay_Payment_Adminhtml</Quickpay_Payment>
+                    </modules>
+                </args>
+            </adminhtml>
+        </routers>
+    </admin>
     <adminhtml>
         <translate>
             <modules>
