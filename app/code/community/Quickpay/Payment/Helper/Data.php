@@ -462,6 +462,7 @@ class Quickpay_Payment_Helper_Data extends Mage_Core_Helper_Abstract
             $transaction->setOrderPaymentObject($order->getPayment());
             $transaction->setOrder($order);
         }
+
         if ($type == Mage_Sales_Model_Order_Payment_Transaction::TYPE_AUTH) {
             $transaction->setIsClosed(false);
         } else {

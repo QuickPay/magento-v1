@@ -24,6 +24,7 @@ class Quickpay_Payment_Adminhtml_QuickpayController extends Mage_Adminhtml_Contr
 
                 if (!$order->canInvoice()) {
                     $this->_getSession()->addError($this->__('Could not create invoice for %s', $order->getIncrementId()));
+                    continue;
                 }
 
                 /* @var $invoice Mage_Sales_Model_Order_Invoice */
@@ -31,6 +32,7 @@ class Quickpay_Payment_Adminhtml_QuickpayController extends Mage_Adminhtml_Contr
 
                 if (!$invoice->getTotalQty()) {
                     $this->_getSession()->addError($this->__('Cannot create an invoice without products for %s.', $order->getIncrementId()));
+                    continue;
                 }
 
                 $invoice->setRequestedCaptureCase(Mage_Sales_Model_Order_Invoice::CAPTURE_ONLINE);
@@ -43,6 +45,7 @@ class Quickpay_Payment_Adminhtml_QuickpayController extends Mage_Adminhtml_Contr
                 $transactionSave->save();
             } catch (Exception $e) {
                 $this->_getSession()->addError($this->__('Invoice and capture failed for %s: %s', $order->getIncrementId(), $e->getMessage()));
+                continue;
             }
         }
 
