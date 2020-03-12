@@ -1,0 +1,25 @@
+.mobilepay-wrapper {
+    margin-bottom: 40px;
+}
+.mobilepay-wrapper .mobilepay-modal {
+    margin-top: 15px;
+    display: block;
+}
+#mobilepay-modal .mobilepay-checkout-agreements {
+    margin-top: 10px;
+}
+#mobilepay-modal .action,
+#mobilepay-agreement-modal .action {
+    margin-top: 20px;
+}
+#mobilepay-modal .mobilepay-agreement-modal {
+    padding-left: 5px;
+}
+.white-popup {
+    position: relative;
+    background: #FFF;
+    padding: 20px;
+    width: auto;
+    max-width: 500px;
+    margin: 20px auto;
+}

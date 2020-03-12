@@ -1,0 +1,3 @@
+<?php if ($this->isMobilePayCheckoutEnabled()): ?>
+    <a href="<?php echo $this->getCheckoutUrl() ?>"><img src="<?php echo $this->getSkinUrl('images/quickpaypayment/mobilepay_checkout.png'); ?>" height="33" alt="<?php echo Mage::helper('core')->quoteEscape($this->__('Checkout with MobilePay')); ?>"></a>
+<?php endif; ?>

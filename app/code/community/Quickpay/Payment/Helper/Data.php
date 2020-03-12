@@ -157,6 +157,56 @@ class Quickpay_Payment_Helper_Data extends Mage_Core_Helper_Abstract
     }
 
     /**
+     * Create a Payment
+     *
+     * @param Mage_Sales_Model_Order $order
+     * @return mixed|string
+     */
+    public function qpCreateMobilepayPayment(Mage_Sales_Model_Order $order, $shippingData)
+    {
+        $resource = Mage::getSingleton('core/resource');
+        $connection = $resource->getConnection('core_write');
+        $table = $resource->getTableName('quickpaypayment_order_status');
+        $connection->insert($table, array('ordernum' => $order->getIncrementId()));
+
+        $postArray = array();
+
+        $postArray['order_id'] = $order->getIncrementId();
+        $postArray['currency'] = $order->getOrderCurrency()->ToString();
+
+        if ($textOnStatement = Mage::getStoreConfig('payment/quickpaypayment_payment/text_on_statement')) {
+            $postArray['text_on_statement'] = $textOnStatement;
+        }
+
+        $postArray['basket'] = array();
+
+        //Add order items to basket array
+        foreach ($order->getAllVisibleItems() as $item) {
+            $product = array(
+                'qty'        => (int) $item->getQtyOrdered(),
+                'item_no'    => $item->getSku(),
+                'item_name'  => $item->getName(),
+                'item_price' => (int) ($item->getBasePriceInclTax() * 100),
+                'vat_rate'   => $item->getTaxPercent() / 100,
+            );
+
+            $postArray['basket'][] = $product;
+        }
+
+        if($shippingData){
+            $postArray['shipping']['method'] = $shippingData['code'];
+            $postArray['shipping']['amount'] = $shippingData['price'] * 100;
+        }
+
+        $storeId = Mage::app()->getStore()->getStoreId();
+        $this->apiKey = Mage::getStoreConfig('payment/quickpaypayment_payment/apikey', $storeId);
+        $result = $this->request('payments', $postArray, '');
+        $result = json_decode($result);
+
+        return $result;
+    }
+
+    /**
      * Create a Payment Link
      *
      * @param $id
@@ -462,7 +512,6 @@ class Quickpay_Payment_Helper_Data extends Mage_Core_Helper_Abstract
             $transaction->setOrderPaymentObject($order->getPayment());
             $transaction->setOrder($order);
         }
-
         if ($type == Mage_Sales_Model_Order_Payment_Transaction::TYPE_AUTH) {
             $transaction->setIsClosed(false);
         } else {
@@ -584,4 +633,5 @@ class Quickpay_Payment_Helper_Data extends Mage_Core_Helper_Abstract
     {
         return (string) Mage::getConfig()->getNode()->modules->Quickpay_Payment->version;
     }
+
 }

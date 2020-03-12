@@ -51,10 +51,6 @@ class Quickpay_Payment_Model_System_Config_Source_Cardlogos
             array(
                 'value' => 'mobilepay',
                 'label' => Mage::helper('quickpaypayment')->__('MobilePay')
-            ),
-            array(
-                'value' => 'paypal',
-                'label' => Mage::helper('quickpaypayment')->__('Paypal')
             )
         );
     }

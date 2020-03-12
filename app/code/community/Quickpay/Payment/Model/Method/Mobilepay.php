@@ -8,4 +8,9 @@ class Quickpay_Payment_Model_Method_Mobilepay extends Quickpay_Payment_Model_Met
     {
         return 'mobilepay';
     }
+
+    public function isAvailable($quote = null)
+    {
+        return false;
+    }
 }

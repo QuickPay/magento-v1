@@ -1,0 +1,47 @@
+<?php if($this->isActive()) : ?>
+<div class="mobilepay-wrapper">
+    <h2><?php echo $this->getTitle() ?></h2>
+    <p><?php echo $this->getDescription() ?></p>
+
+    <a href="#mobilepay-modal" type="button" class="btn mobilepay-modal" id="MobilePayButton" data-toggle="modal" data-target="#MobilePayModal">
+        <img src="<?php echo $this->getSkinUrl('images/quickpaypayment/mobilepay_checkout.png'); ?>" title="MobilePay" />
+    </a>
+    <?php $methods = $this->getShippingMethods() ?>
+    <div id="mobilepay-modal" class="mfp-hide white-popup">
+        <form id="mobilepay-form" action="<?php echo $this->getRedirectUrl() ?>" method="post">
+            <input type="hidden" name="mobilepay" value="1" />
+            <div class="select-shipping field required">
+                <?php if($this->getPopupDescription()) : ?>
+                    <p><?php echo $this->getPopupDescription(); ?></p>
+                <?php endif; ?>
+                <label><?php echo __('Vælg forsendelsesmetode') ?>:</label>
+                <select name="shipping" class="input-text required-entry">
+                    <option value="">---</option>
+                    <?php foreach($methods as $code => $method) : ?>
+                        <option value="<?php echo $code; ?>"><?php echo $method['title'] ?> ( +<?php echo $method['price'] ?> )</option>
+                    <?php endforeach; ?>
+                </select>
+
+                <div><?php echo $this->getChildHtml('agreements') ?></div>
+
+            </div>
+
+            <div class="action">
+                <button class="button" type="submit" title="<?php echo $this->__('Place Order Now'); ?>"><?php echo $this->__('Place Order Now'); ?></button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<script>
+    //<![CDATA[
+    var mobilepayform = new VarienForm('mobilepay-form', true);
+    //]]>
+
+    (function($){
+        $('.mobilepay-modal').magnificPopup({
+            type: 'inline'
+        });
+    })(jQuery);
+</script>
+<?php endif; ?>

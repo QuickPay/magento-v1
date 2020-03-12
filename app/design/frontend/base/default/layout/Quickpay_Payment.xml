@@ -8,4 +8,65 @@
         </reference>
     </quickpaypayment_redirect>
 
+    <checkout_cart_index>
+        <reference name="checkout.cart.top_methods">
+            <block type="quickpaypayment/mpo_link" template="quickpaypayment/mpo/link.phtml"/>
+        </reference>
+
+        <reference name="checkout.cart.methods">
+            <block type="quickpaypayment/mpo_link" template="quickpaypayment/mpo/link.phtml"/>
+        </reference>
+    </checkout_cart_index>
+
+    <checkout_mobilepay_shipping>
+        <reference name="root">
+            <action method="setTemplate"><template>page/1column.phtml</template></action>
+        </reference>
+        <reference name="content">
+            <block type="quickpaypayment/mpo_shippingMethod" template="quickpaypayment/mpo/shipping_method.phtml"/>
+        </reference>
+    </checkout_mobilepay_shipping>
+
+    <quickpaypayment_payment_successmpo>
+        <reference name="root">
+            <action method="setTemplate"><template>page/2columns-right.phtml</template></action>
+        </reference>
+        <reference name="content">
+            <block type="checkout/onepage_success" name="checkout.success" template="checkout/success.phtml"/>
+        </reference>
+    </quickpaypayment_payment_successmpo>
+
+    <checkout_onepage_index>
+        <reference name="head">
+            <action method="addCss" ifconfig="payment/quickpay_mobilepay/active">
+                <stylesheet>css/quickpaypayment/magnific-popup.css</stylesheet>
+            </action>
+            <action method="addCss" ifconfig="payment/quickpay_mobilepay/active">
+                <stylesheet>css/quickpaypayment/styles.css</stylesheet>
+            </action>
+            <action method="addItem" ifconfig="payment/quickpay_mobilepay/active"><type>skin_js</type><name>js/quickpaypayment/jquery.magnific-popup.min.js</name></action>
+        </reference>
+        <reference name="content">
+            <block type="quickpaypayment/checkout_mobilepay" name="quickpay.mobilepay" template="quickpaypayment/checkout/mobilepay.phtml" before="checkout.onepage" ifconfig="payment/quickpay_mobilepay/active">
+                <block type="checkout/agreements" name="checkout.onepage.agreements" as="agreements" template="quickpaypayment/checkout/agreements.phtml"/>
+            </block>
+        </reference>
+    </checkout_onepage_index>
+
+    <onestepcheckout_index_index>
+        <reference name="head">
+            <action method="addCss" ifconfig="payment/quickpay_mobilepay/active">
+                <stylesheet>css/quickpaypayment/magnific-popup.css</stylesheet>
+            </action>
+            <action method="addCss" ifconfig="payment/quickpay_mobilepay/active">
+                <stylesheet>css/quickpaypayment/styles.css</stylesheet>
+            </action>
+            <action method="addItem" ifconfig="payment/quickpay_mobilepay/active"><type>skin_js</type><name>js/quickpaypayment/jquery.magnific-popup.min.js</name></action>
+        </reference>
+        <reference name="content">
+            <block type="quickpaypayment/checkout_mobilepay" name="quickpay.mobilepay" template="quickpaypayment/checkout/mobilepay.phtml" before="checkout.onepage" ifconfig="payment/quickpay_mobilepay/active">
+                <block type="checkout/agreements" name="checkout.onepage.agreements" as="agreements" template="quickpaypayment/checkout/agreements.phtml"/>
+            </block>
+        </reference>
+    </onestepcheckout_index_index>
 </layout>

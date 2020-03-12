@@ -403,10 +403,126 @@
                             <show_in_website>1</show_in_website>
                             <show_in_store>1</show_in_store>
                         </instructions>
+                        <popup_description translate="label">
+                            <label>Popup Description</label>
+                            <frontend_type>textarea</frontend_type>
+                            <sort_order>51</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>1</show_in_store>
+                        </popup_description>
+                        <shipping_store_pick_up_title translate="label">
+                            <label>Shipping Title</label>
+                            <frontend_type>text</frontend_type>
+                            <sort_order>52</sort_order>
+                            <comment>Title for "Hent i butikken" shipping method</comment>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>1</show_in_store>
+                        </shipping_store_pick_up_title>
+                        <shipping_store_pick_up translate="label">
+                            <label>Shipping Price</label>
+                            <frontend_type>text</frontend_type>
+                            <sort_order>53</sort_order>
+                            <comment>Shipping price for "Hent i butikken" shipping method</comment>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>1</show_in_store>
+                        </shipping_store_pick_up>
+                        <shipping_home_delivery_title translate="label">
+                            <label>Shipping Title</label>
+                            <frontend_type>text</frontend_type>
+                            <sort_order>54</sort_order>
+                            <comment>Shipping title for "Ordren leveres til din hjemmeadresse" shipping method</comment>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>1</show_in_store>
+                        </shipping_home_delivery_title>
+                        <shipping_home_delivery translate="label">
+                            <label>Shipping Price</label>
+                            <frontend_type>text</frontend_type>
+                            <sort_order>55</sort_order>
+                            <comment>Shipping price for "Ordren leveres til din hjemmeadresse" shipping method</comment>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>1</show_in_store>
+                        </shipping_home_delivery>
+                        <shipping_registered_box_title translate="label">
+                            <label>Shipping Title</label>
+                            <frontend_type>text</frontend_type>
+                            <sort_order>56</sort_order>
+                            <comment>Shipping title for "Afhentning i en pakkeshop (registered_box)" shipping method</comment>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>1</show_in_store>
+                        </shipping_registered_box_title>
+                        <shipping_registered_box translate="label">
+                            <label>Shipping Price</label>
+                            <frontend_type>text</frontend_type>
+                            <sort_order>57</sort_order>
+                            <comment>Shipping price for "Afhentning i en pakkeshop (registered_box)" shipping method</comment>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>1</show_in_store>
+                        </shipping_registered_box>
+                        <shipping_unregistered_box_title translate="label">
+                            <label>Shipping Title</label>
+                            <frontend_type>text</frontend_type>
+                            <sort_order>58</sort_order>
+                            <comment>Shipping title for "Afhentning i en pakkeshop (unregistered_box)" shipping method</comment>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>1</show_in_store>
+                        </shipping_unregistered_box_title>
+                        <shipping_unregistered_box translate="label">
+                            <label>Shipping Price</label>
+                            <frontend_type>text</frontend_type>
+                            <sort_order>59</sort_order>
+                            <comment>Shipping price for "Afhentning i en pakkeshop (unregistered_box)" shipping method</comment>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>1</show_in_store>
+                        </shipping_unregistered_box>
+                        <shipping_pick_up_point_title translate="label">
+                            <label>Shipping Title</label>
+                            <frontend_type>text</frontend_type>
+                            <sort_order>60</sort_order>
+                            <comment>Shipping title for "Afhentning i en pakkeshop (pick_up_point)" shipping method</comment>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>1</show_in_store>
+                        </shipping_pick_up_point_title>
+                        <shipping_pick_up_point translate="label">
+                            <label>Shipping Price</label>
+                            <frontend_type>text</frontend_type>
+                            <sort_order>61</sort_order>
+                            <comment>Shipping price for "Afhentning i en pakkeshop (pick_up_point)" shipping method</comment>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>1</show_in_store>
+                        </shipping_pick_up_point>
+                        <shipping_own_delivery_title translate="label">
+                            <label>Shipping Title</label>
+                            <frontend_type>text</frontend_type>
+                            <sort_order>62</sort_order>
+                            <comment>Shipping title for "Ordren leveres til din hjemmeadresse" shipping method</comment>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>1</show_in_store>
+                        </shipping_own_delivery_title>
+                        <shipping_own_delivery translate="label">
+                            <label>Shipping Price</label>
+                            <frontend_type>text</frontend_type>
+                            <sort_order>63</sort_order>
+                            <comment>Shipping price for "Ordren leveres til din hjemmeadresse" shipping method</comment>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>1</show_in_store>
+                        </shipping_own_delivery>
                         <sort_order translate="label">
                             <label>Sort Order</label>
                             <frontend_type>text</frontend_type>
-                            <sort_order>60</sort_order>
+                            <sort_order>64</sort_order>
                             <show_in_default>1</show_in_default>
                             <show_in_website>1</show_in_website>
                             <show_in_store>1</show_in_store>

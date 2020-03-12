@@ -1,0 +1,50 @@
+<?php /** @var $this Quickpay_Payment_Block_Mpo_ShippingMethod */ ?>
+<?php $_shippingRateGroups = $this->getShippingRates(); ?>
+<div class="page-title">
+    <h1><?php echo $this->__('Select shipping method') ?></h1>
+</div>
+<?php if (!$_shippingRateGroups): ?>
+    <p><?php echo $this->__('Sorry, no quotes are available for this order at this time.') ?></p>
+<?php else: ?>
+<form action="<?php echo $this->getPostActionUrl(); ?>" method="post" id="shipping_method_form">
+    <div id="shipping-methods">
+        <dl class="sp-methods">
+            <?php $shippingCodePrice = array(); ?>
+            <?php $_sole = count($_shippingRateGroups) == 1; foreach ($_shippingRateGroups as $code => $_rates): ?>
+                <dt><?php echo $this->escapeHtml($this->getCarrierName($code)) ?></dt>
+                <dd>
+                    <ul>
+                        <?php $_sole = $_sole && count($_rates) == 1; foreach ($_rates as $_rate): ?>
+                            <?php $shippingCodePrice[] = "'".$_rate->getCode()."':".(float)$_rate->getPrice(); ?>
+                            <li>
+                                <?php if ($_rate->getErrorMessage()): ?>
+                                    <ul class="messages"><li class="error-msg"><ul><li><?php echo $this->escapeHtml($_rate->getErrorMessage()) ?></li></ul></li></ul>
+                                <?php else: ?>
+                                <?php if ($_sole) : ?>
+                                    <span class="no-display"><input name="shipping_method" type="radio" value="<?php echo $_rate->getCode() ?>" id="s_method_<?php echo $_rate->getCode() ?>" checked="checked" /></span>
+                                <?php else: ?>
+                                <input name="shipping_method" type="radio" value="<?php echo $_rate->getCode() ?>" id="s_method_<?php echo $_rate->getCode() ?>"<?php if($_rate->getCode()===$this->getAddressShippingMethod()) echo ' checked="checked"' ?> class="radio"/>
+
+                                <?php endif; ?>
+                                    <label for="s_method_<?php echo $_rate->getCode() ?>"><?php echo $this->escapeHtml($_rate->getMethodTitle()) ?>
+                                        <?php $_excl = $this->getShippingPrice($_rate->getPrice(), $this->helper('tax')->displayShippingPriceIncludingTax()); ?>
+                                        <?php $_incl = $this->getShippingPrice($_rate->getPrice(), true); ?>
+                                        <?php echo $_excl; ?>
+                                        <?php if ($this->helper('tax')->displayShippingBothPrices() && $_incl != $_excl): ?>
+                                            (<?php echo $this->__('Incl. Tax'); ?> <?php echo $_incl; ?>)
+                                        <?php endif; ?>
+                                    </label>
+                                <?php endif ?>
+                            </li>
+                        <?php endforeach; ?>
+                    </ul>
+                </dd>
+            <?php endforeach; ?>
+        </dl>
+    </div>
+    <div class="buttons-set">
+        <p class="back-link"><a href="<?php echo $this->getBackUrl(); ?>"><small>&laquo; </small><?php echo $this->__('Back') ?></a></p>
+        <button type="submit" title="<?php echo Mage::helper('core')->quoteEscape($this->__('Continue')) ?>" class="button"><span><span><?php echo $this->__('Continue') ?></span></span></button>
+    </div>
+</form>
+<?php endif; ?>

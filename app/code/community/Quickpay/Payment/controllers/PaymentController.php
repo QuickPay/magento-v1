@@ -70,25 +70,6 @@ class Quickpay_Payment_PaymentController extends Mage_Core_Controller_Front_Acti
             $quote->setIsActive(false)->save();
         }
 
-        // CREATES INVOICE if payment instantcapture is ON
-        if ((int)$payment->getConfigData('instantcapture') == 1 && (int)$payment->getConfigData('instantinvoice') == 1) {
-            if ($order->canInvoice()) {
-                $invoice = $order->prepareInvoice();
-                $invoice->register();
-                $invoice->setEmailSent(true);
-                $invoice->getOrder()->setCustomerNoteNotify(true);
-                $invoice->sendEmail(true, '');
-                Mage::getModel('core/resource_transaction')->addObject($invoice)->addObject($invoice->getOrder())->save();
-
-                $order->addStatusToHistory(Mage_Sales_Model_Order::STATE_COMPLETE);
-                $order->save();
-            }
-        } else {
-            if (((int)$payment->getConfigData('sendmailorderconfirmationbefore')) == 1) {
-              $this->sendEmail($order);
-            }
-        }
-
         $this->_redirect('checkout/onepage/success');
     }
 
@@ -128,6 +109,14 @@ class Quickpay_Payment_PaymentController extends Mage_Core_Controller_Front_Acti
             // Save the order into the quickpaypayment_order_status table
             // IMPORTANT to update the status as 1 to ensure that the stock is handled correctly!
             if ($request->accepted && $operation->type == 'authorize') {
+                if($request->facilitator == 'mobilepay'){
+                    $order = $this->updateOrderByCallback($order, $request);
+
+                    $order->addStatusHistoryComment(Mage::helper('quickpaypayment')->__('Order was created from MobilePay Checkout'))
+                        ->setIsCustomerNotified(false)
+                        ->save();
+                }
+
                 if ($operation->pending == true) {
                     Mage::log('Transaction accepted but pending', null, 'qp_callback.log');
                 } else {
@@ -214,6 +203,26 @@ class Quickpay_Payment_PaymentController extends Mage_Core_Controller_Front_Acti
                 }
 
                 Mage::helper('quickpaypayment')->createTransaction($order, $request->id, Mage_Sales_Model_Order_Payment_Transaction::TYPE_AUTH);
+
+                // CREATES INVOICE if payment instantcapture is ON
+                if ((int)$payment->getConfigData('instantcapture') == 1 && (int)$payment->getConfigData('instantinvoice') == 1) {
+                    if ($order->canInvoice()) {
+                        $invoice = $order->prepareInvoice();
+                        $invoice->setRequestedCaptureCase(Mage_Sales_Model_Order_Invoice::CAPTURE_ONLINE);
+                        $invoice->register();
+                        $invoice->setEmailSent(true);
+                        $invoice->getOrder()->setCustomerNoteNotify(true);
+                        $invoice->sendEmail(true, '');
+                        Mage::getModel('core/resource_transaction')->addObject($invoice)->addObject($invoice->getOrder())->save();
+
+                        $order->addStatusToHistory(Mage_Sales_Model_Order::STATE_COMPLETE);
+                        $order->save();
+                    }
+                } else {
+                    if (((int)$payment->getConfigData('sendmailorderconfirmationbefore')) == 1) {
+                        $this->sendEmail($order);
+                    }
+                }
 
                 /*
                  * If test mode is disabled and the order is placed with a test card, reject it
@@ -311,6 +320,100 @@ class Quickpay_Payment_PaymentController extends Mage_Core_Controller_Front_Acti
     protected function _getSession()
     {
         return Mage::getSingleton('checkout/session');
+    }
+
+    /**
+     * @param $order
+     * @param $data
+     */
+    public function updateOrderByCallback($order, $data){
+        Mage::log("start update mobilepay order", null, 'qp_callback.log');
+
+        $shippingAddress = $data->shipping_address;
+        $billingAddress = $data->invoice_address;
+
+        if($shippingAddress && !$billingAddress){
+            $billingAddress = $shippingAddress;
+        }
+
+        if(!$shippingAddress && $billingAddress){
+            $shippingAddress = $billingAddress;
+        }
+
+        if(!$shippingAddress && !$billingAddress){
+            return;
+        }
+
+        if(!$order->getCustomerId()){
+            $order->setCustomerEmail($billingAddress->email);
+        }
+
+        $billingName = $this->splitCustomerName($billingAddress->name);
+        $billingStreet = [$billingAddress->street, $billingAddress->house_number];
+        if($order->getBillingAddress()) {
+            $order->getBillingAddress()->addData(
+                [
+                    'firstname' => $billingName['firstname'],
+                    'lastname' => $billingName['lastname'],
+                    'street' => implode(' ', $billingStreet),
+                    'city' => $billingAddress->city ? $billingAddress->city : '-',
+                    'country_id' => $billingAddress->country_code ? $billingAddress->country_code : 'DK',
+                    'region' => $billingAddress->region,
+                    'postcode' => $billingAddress->zip_code ? $billingAddress->zip_code : '-',
+                    'telephone' => $billingAddress->phone_number ? $billingAddress->phone_number : '-',
+                    'vat_id' => $billingAddress->vat_no,
+                    'save_in_address_book' => 0
+                ]
+            );
+        }
+
+        $shippingName = $this->splitCustomerName($shippingAddress->name);
+        $shippingStreet = [$shippingAddress->street, $shippingAddress->house_number];
+
+        if($order->getShippingAddress()) {
+            $order->getShippingAddress()->addData([
+                'firstname' => $shippingName['firstname'],
+                'lastname' => $shippingName['lastname'],
+                'street' => implode(' ', $shippingStreet),
+                'city' => $shippingAddress->city ? $shippingAddress->city : '-',
+                'country_id' => $shippingAddress->country_code ? $shippingAddress->country_code : 'DK',
+                'region' => $shippingAddress->region,
+                'postcode' => $shippingAddress->zip_code ? $shippingAddress->zip_code : '-',
+                'telephone' => $shippingAddress->phone_number ? $shippingAddress->phone_number : '-',
+                'vat_id' => $shippingAddress->vat_no,
+                'save_in_address_book' => 0
+            ]);
+        }
+
+        try {
+            $order->save();
+        } catch (\Exception $e) {
+            Mage::log($e->getMessage(), null, 'qp_callback.log');
+        }
+
+        return $order;
+    }
+
+    /**
+     * @param $name
+     * @return array
+     */
+    public function splitCustomerName($name)
+    {
+        $name = trim($name);
+        if (strpos($name, ' ') === false) {
+            // you can return the firstname with no last name
+            return array('firstname' => $name, 'lastname' => '');
+
+            // or you could also throw an exception
+            throw Exception('Invalid name specified.');
+        }
+
+        $parts     = explode(" ", $name);
+        $lastname  = array_pop($parts);
+        $firstname = implode(" ", $parts);
+
+        return array('firstname' => $firstname, 'lastname' => $lastname);
     }
 
 }

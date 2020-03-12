@@ -100,7 +100,7 @@ class Quickpay_Payment_Model_Observer
             $block->addColumnsOrder('massaction', 'fraudprobability')->sortColumnsByOrder();
 
             $massAction = $block->getMassactionBlock();
-            $massAction->addItem('quickpay_mass_capture', array(
+            $massAction->addItem('quickpay_bulk_capture', array(
                 'label' => 'Capture with QuickPay',
                 'url' => $block->getUrl('adminhtml/quickpay/massCapture')
             ));
@@ -127,7 +127,7 @@ class Quickpay_Payment_Model_Observer
                 "cancelurl"                    => $this->getCancelUrl($order->getStore()),
                 "callbackurl"                  => $this->getCallbackUrl($order->getStore()),
                 "language"                     => $payment->calcLanguage(Mage::app()->getLocale()->getLocaleCode()),
-                "autocapture"                  => $payment->getConfigData('instantcapture'),
+                "autocapture"                  => 0,
                 "autofee"                      => $payment->getConfigData('transactionfee'),
                 "payment_methods"              => $order->getPayment()->getMethodInstance()->getPaymentMethods(),
                 "google_analytics_tracking_id" => $payment->getConfigData('googleanalyticstracking'),
