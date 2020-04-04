@@ -15,7 +15,7 @@ class Quickpay_Payment_Model_Carrier_Shipping
      */
     public function collectRates(Mage_Shipping_Model_Rate_Request $request)
     {
-        if(!Mage::getStoreConfig('payment/quickpay_mobilepay/active', $this->getStore()) || !Mage::app()->getRequest()->getParam('mobilepay')){
+        if(!Mage::getStoreConfig('payment/quickpay_mobilepay_checkout/active', $this->getStore()) || !Mage::app()->getRequest()->getParam('mobilepay')){
             return false;
         }
         $result = Mage::getModel('shipping/rate_result');
@@ -91,7 +91,10 @@ class Quickpay_Payment_Model_Carrier_Shipping
         $methods = $this->getAvailableMethods();
         $data = [];
         foreach($methods as $code => $title){
-            $price = Mage::getStoreConfig('payment/quickpay_mobilepay/shipping_'.$code, $this->getStore());
+            $price = Mage::getStoreConfig('payment/quickpay_mobilepay_checkout/shipping_'.$code, $this->getStore());
+            if(!$price){
+                $price = 0;
+            }
             $data[$code] = [
                 'title' => $title,
                 'price' => Mage::helper('core')->currency($price, true, false)
@@ -107,7 +110,10 @@ class Quickpay_Payment_Model_Carrier_Shipping
     public function getMethodByCode($code){
         $methods = $this->getAvailableMethods();
         if(isset($methods[$code])){
-            $price = Mage::getStoreConfig('payment/quickpay_mobilepay/shipping_'.$code, $this->getStore());
+            $price = Mage::getStoreConfig('payment/quickpay_mobilepay_checkout/shipping_'.$code, $this->getStore());
+            if(!$price){
+                $price = 0;
+            }
             return [
                 'title' => $methods[$code],
                 'price' => number_format($price, 2)
@@ -120,7 +126,7 @@ class Quickpay_Payment_Model_Carrier_Shipping
      * @return \Magento\Framework\Phrase|mixed|string
      */
     public function getShipping1Title(){
-        $title = Mage::getStoreConfig('payment/quickpay_mobilepay/shipping_store_pick_up_title', $this->getStore());
+        $title = Mage::getStoreConfig('payment/quickpay_mobilepay_checkout/shipping_store_pick_up_title', $this->getStore());
         return $title ? $title : Mage::helper('quickpaypayment')->__('Hent i butikken');
     }
 
@@ -128,7 +134,7 @@ class Quickpay_Payment_Model_Carrier_Shipping
      * @return \Magento\Framework\Phrase|mixed|string
      */
     public function getShipping2Title(){
-        $title = Mage::getStoreConfig('payment/quickpay_mobilepay/shipping_home_delivery_title', $this->getStore());
+        $title = Mage::getStoreConfig('payment/quickpay_mobilepay_checkout/shipping_home_delivery_title', $this->getStore());
         return $title ? $title : Mage::helper('quickpaypayment')->__('Ordren leveres til din hjemmeadresse');
     }
 
@@ -136,7 +142,7 @@ class Quickpay_Payment_Model_Carrier_Shipping
      * @return \Magento\Framework\Phrase|mixed|string
      */
     public function getShipping3Title(){
-        $title = Mage::getStoreConfig('payment/quickpay_mobilepay/shipping_registered_box_title', $this->getStore());
+        $title = Mage::getStoreConfig('payment/quickpay_mobilepay_checkout/shipping_registered_box_title', $this->getStore());
         return $title ? $title : Mage::helper('quickpaypayment')->__('Afhentning i en pakkeshop (registered_box)');
     }
 
@@ -144,7 +150,7 @@ class Quickpay_Payment_Model_Carrier_Shipping
      * @return \Magento\Framework\Phrase|mixed|string
      */
     public function getShipping4Title(){
-        $title = Mage::getStoreConfig('payment/quickpay_mobilepay/shipping_unregistered_box_title', $this->getStore());
+        $title = Mage::getStoreConfig('payment/quickpay_mobilepay_checkout/shipping_unregistered_box_title', $this->getStore());
         return $title ? $title : Mage::helper('quickpaypayment')->__('Afhentning i en pakkeshop (unregistered_box)');
     }
 
@@ -152,7 +158,7 @@ class Quickpay_Payment_Model_Carrier_Shipping
      * @return \Magento\Framework\Phrase|mixed|string
      */
     public function getShipping5Title(){
-        $title = Mage::getStoreConfig('payment/quickpay_mobilepay/shipping_pick_up_point_title', $this->getStore());
+        $title = Mage::getStoreConfig('payment/quickpay_mobilepay_checkout/shipping_pick_up_point_title', $this->getStore());
         return $title ? $title : Mage::helper('quickpaypayment')->__('Afhentning i en pakkeshop (pick_up_point)');
     }
 
@@ -160,7 +166,7 @@ class Quickpay_Payment_Model_Carrier_Shipping
      * @return \Magento\Framework\Phrase|mixed|string
      */
     public function getShipping6Title(){
-        $title = Mage::getStoreConfig('payment/quickpay_mobilepay/shipping_own_delivery_title', $this->getStore());
+        $title = Mage::getStoreConfig('payment/quickpay_mobilepay_checkout/shipping_own_delivery_title', $this->getStore());
         return $title ? $title : Mage::helper('quickpaypayment')->__('Ordren leveres til din hjemmeadresse');
     }
 }

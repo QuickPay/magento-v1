@@ -51,7 +51,7 @@ class Quickpay_Payment_MobilepayController extends Mage_Core_Controller_Front_Ac
             $shippingAddress->setCollectShippingRates(true)->collectShippingRates()->setShippingMethod('quickpay_mobilepay_quickpay_mobilepay');
 
             // Set Sales Order Payment
-            $quote->getPayment()->importData(['method' => 'quickpaypayment_payment']);
+            $quote->getPayment()->importData(['method' => 'quickpay_mobilepay']);
 
             // Collect Totals & Save Quote
             $quote->collectTotals()->save();
@@ -119,6 +119,10 @@ class Quickpay_Payment_MobilepayController extends Mage_Core_Controller_Front_Ac
                 'code' => $params['shipping'],
                 'price' => $shippingData['price']
             ];
+
+            Mage::log("payment request", null, 'qp_callback.log');
+            Mage::log(print_r($shippingServiceData, true), null, 'qp_callback.log');
+
             $result = Mage::helper('quickpaypayment')->qpCreateMobilepayPayment($order, $shippingServiceData);
             $result = Mage::helper('quickpaypayment')->qpCreatePaymentLink($result->id, $parameters);
 

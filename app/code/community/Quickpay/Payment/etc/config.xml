@@ -211,6 +211,10 @@
                 <model>quickpaypayment/method_mobilepay</model>
                 <title>QuickPay MobilePay</title>
                 <allowspecific>0</allowspecific>
+            </quickpay_mobilepay>
+            <quickpay_mobilepay_checkout>
+                <active>0</active>
+                <title>QuickPay MobilePay Checkout</title>
                 <instructions>Pay with MobilePay</instructions>
                 <shipping_store_pick_up_title>Hent i butikken</shipping_store_pick_up_title>
                 <shipping_home_delivery_title>Ordren leveres til din hjemmeadresse</shipping_home_delivery_title>
@@ -218,7 +222,7 @@
                 <shipping_unregistered_box_title>Afhentning i en pakkeshop (unregistered_box)</shipping_unregistered_box_title>
                 <shipping_pick_up_point_title>Afhentning i en pakkeshop (pick_up_point)</shipping_pick_up_point_title>
                 <shipping_own_delivery_title>Ordren leveres til din hjemmeadresse</shipping_own_delivery_title>
-            </quickpay_mobilepay>
+            </quickpay_mobilepay_checkout>
             <quickpay_klarna>
                 <active>0</active>
                 <model>quickpaypayment/method_klarna</model>

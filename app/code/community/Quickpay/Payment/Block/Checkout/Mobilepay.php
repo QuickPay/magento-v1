@@ -2,10 +2,10 @@
 
 class Quickpay_Payment_Block_Checkout_Mobilepay extends Mage_Core_Block_Template
 {
-    const MOBILEPAY_ACTICE_XML_PATH      = 'payment/quickpay_mobilepay/active';
-    const MOBILEPAY_TITLE_XML_PATH      = 'payment/quickpay_mobilepay/title';
-    const MOBILEPAY_DESCRIPTION_XML_PATH  = 'payment/quickpay_mobilepay/instructions';
-    const MOBILEPAY_POPUP_DESCRIPTION_XML_PATH  = 'payment/quickpay_mobilepay/popup_description';
+    const MOBILEPAY_ACTICE_XML_PATH      = 'payment/quickpay_mobilepay_checkout/active';
+    const MOBILEPAY_TITLE_XML_PATH      = 'payment/quickpay_mobilepay_checkout/title';
+    const MOBILEPAY_DESCRIPTION_XML_PATH  = 'payment/quickpay_mobilepay_checkout/instructions';
+    const MOBILEPAY_POPUP_DESCRIPTION_XML_PATH  = 'payment/quickpay_mobilepay_checkout/popup_description';
 
     /**
      * @return mixed
