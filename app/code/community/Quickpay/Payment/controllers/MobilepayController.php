@@ -31,12 +31,13 @@ class Quickpay_Payment_MobilepayController extends Mage_Core_Controller_Front_Ac
             }
 
             $defaultValue = 'DNK';
+            $defaultCountry = Mage::getStoreConfig('general/country/default', Mage::app()->getStore()->getStoreId());
             $defaultAddress = [
                 'firstname' => $defaultValue,
                 'lastname' => $defaultValue,
                 'street' => $defaultValue,
                 'city' => $defaultValue,
-                'country_id' => 'DK',
+                'country_id' => $defaultCountry,
                 'region' => $defaultValue,
                 'postcode' => $defaultValue,
                 'telephone' => $defaultValue,

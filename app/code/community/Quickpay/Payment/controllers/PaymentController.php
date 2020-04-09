@@ -351,13 +351,14 @@ class Quickpay_Payment_PaymentController extends Mage_Core_Controller_Front_Acti
         $billingName = $this->splitCustomerName($billingAddress->name);
         $billingStreet = [$billingAddress->street, $billingAddress->house_number];
         if($order->getBillingAddress()) {
+            $countryCode = Mage::helper('quickpaypayment')->convertCountryAlphas3To2($billingAddress->country_code);
             $order->getBillingAddress()->addData(
                 [
                     'firstname' => $billingName['firstname'],
                     'lastname' => $billingName['lastname'],
                     'street' => implode(' ', $billingStreet),
                     'city' => $billingAddress->city ? $billingAddress->city : '-',
-                    'country_id' => $billingAddress->country_code ? $billingAddress->country_code : 'DK',
+                    'country_id' => $countryCode,
                     'region' => $billingAddress->region,
                     'postcode' => $billingAddress->zip_code ? $billingAddress->zip_code : '-',
                     'telephone' => $billingAddress->phone_number ? $billingAddress->phone_number : '-',
@@ -371,12 +372,13 @@ class Quickpay_Payment_PaymentController extends Mage_Core_Controller_Front_Acti
         $shippingStreet = [$shippingAddress->street, $shippingAddress->house_number];
 
         if($order->getShippingAddress()) {
+            $countryCode = Mage::helper('quickpaypayment')->convertCountryAlphas3To2($shippingAddress->country_code);
             $order->getShippingAddress()->addData([
                 'firstname' => $shippingName['firstname'],
                 'lastname' => $shippingName['lastname'],
                 'street' => implode(' ', $shippingStreet),
                 'city' => $shippingAddress->city ? $shippingAddress->city : '-',
-                'country_id' => $shippingAddress->country_code ? $shippingAddress->country_code : 'DK',
+                'country_id' => $countryCode,
                 'region' => $shippingAddress->region,
                 'postcode' => $shippingAddress->zip_code ? $shippingAddress->zip_code : '-',
                 'telephone' => $shippingAddress->phone_number ? $shippingAddress->phone_number : '-',
