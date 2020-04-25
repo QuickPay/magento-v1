@@ -25,7 +25,7 @@ class Quickpay_Payment_Block_Payment_Redirect extends Mage_Core_Block_Template
      */
     public function getOrder()
     {
-        return $this->_getCheckout()->getLastRealOrder();
+        return Mage::getModel('sales/order')->loadByIncrementId($this->_getCheckout()->getLastRealOrderId());
     }
 
     /**
