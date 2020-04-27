@@ -10,9 +10,7 @@ $payment = Mage::getModel('quickpaypayment/payment');
             <?php if ($payment->getConfigData('transactionfee')) : ?>
             <br>
             <br>
-            <b><?php echo Mage::helper('quickpaypayment')->__("Tranaktionsgebyr"); ?></b>
-            <br>
-            <?php echo Mage::helper('quickpaypayment')->__("Der vil blive opkrævet et transaktionsgebyr ved brug af denne betalingsmetode. Gebyr størrelsen afhænger af kortvalg og vil blive tilføjet ved betaling."); ?>
+            <?php echo Mage::getStoreConfig('payment/quickpaypayment_payment/transactionfee_description', Mage::app()->getStore()->getStoreId()) ?>
 
             <?php endif; ?>
             <?php endif; ?>

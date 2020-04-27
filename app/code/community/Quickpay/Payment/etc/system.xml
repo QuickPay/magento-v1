@@ -213,6 +213,14 @@
                             <show_in_website>1</show_in_website>
                             <show_in_store>1</show_in_store>
                         </transactionfee>
+                        <transactionfee_description translate="label">
+                            <label>Opkræv Transaktionsgebyr Tekst</label>
+                            <frontend_type>textarea</frontend_type>
+                            <sort_order>101</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>1</show_in_store>
+                        </transactionfee_description>
                         <specifytransactionfee translate="label comment">
                             <label>Transaktionsgebyr Udspecificeret</label>
                             <comment>Udspecificeres kun hvis transaktionsgebyr er slået til</comment>
