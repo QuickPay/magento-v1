@@ -6,6 +6,6 @@ class Quickpay_Payment_Model_Method_Klarna extends Quickpay_Payment_Model_Method
 
     public function getPaymentMethods()
     {
-        return 'klarna';
+        return 'klarna-payments';
     }
 }
