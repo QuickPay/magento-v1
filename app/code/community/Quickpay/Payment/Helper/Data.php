@@ -137,7 +137,7 @@ class Quickpay_Payment_Helper_Data extends Mage_Core_Helper_Abstract
                 'qty'        => (int) $item->getQtyOrdered(),
                 'item_no'    => $item->getSku(),
                 'item_name'  => $item->getName(),
-                'item_price' => (int) ($item->getBasePriceInclTax() * 100),
+                'item_price' => (int) (($item->getBasePriceInclTax() - $item->getDiscountAmount()) * 100),
                 'vat_rate'   => $item->getTaxPercent() / 100,
             );
 
@@ -186,7 +186,7 @@ class Quickpay_Payment_Helper_Data extends Mage_Core_Helper_Abstract
                 'qty'        => (int) $item->getQtyOrdered(),
                 'item_no'    => $item->getSku(),
                 'item_name'  => $item->getName(),
-                'item_price' => (int) ($item->getBasePriceInclTax() * 100),
+                'item_price' => (int) (($item->getBasePriceInclTax() - $item->getDiscountAmount()) * 100),
                 'vat_rate'   => $item->getTaxPercent() / 100,
             );
 
