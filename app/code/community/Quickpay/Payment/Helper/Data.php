@@ -115,6 +115,9 @@ class Quickpay_Payment_Helper_Data extends Mage_Core_Helper_Abstract
             $postArray['shipping_address']['country_code'] = Mage::app()->getLocale()->getTranslation($shippingAddress->getCountryId(), 'Alpha3ToTerritory');
             $postArray['shipping_address']['phone_number'] = $shippingAddress->getTelephone();
             $postArray['shipping_address']['email'] = $shippingAddress->getEmail();
+            $postArray['shipping_address']['house_number'] = '';
+            $postArray['shipping_address']['house_extension'] = '';
+            $postArray['shipping_address']['mobile_number'] = '';
         }
 
         //Add billing_address
@@ -127,6 +130,9 @@ class Quickpay_Payment_Helper_Data extends Mage_Core_Helper_Abstract
             $postArray['invoice_address']['country_code'] = Mage::app()->getLocale()->getTranslation($billingAddress->getCountryId(), 'Alpha3ToTerritory');
             $postArray['invoice_address']['phone_number'] = $billingAddress->getTelephone();
             $postArray['invoice_address']['email'] = $billingAddress->getEmail();
+            $postArray['invoice_address']['house_number'] = '';
+            $postArray['invoice_address']['house_extension'] = '';
+            $postArray['invoice_address']['mobile_number'] = '';
         }
 
         $postArray['basket'] = array();
