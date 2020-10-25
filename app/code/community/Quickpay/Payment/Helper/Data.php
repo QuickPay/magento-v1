@@ -135,6 +135,10 @@ class Quickpay_Payment_Helper_Data extends Mage_Core_Helper_Abstract
             $postArray['invoice_address']['mobile_number'] = '';
         }
 
+        $postArray['shopsystem'] = [];
+        $postArray['shopsystem']['name'] = 'Magento 1';
+        $postArray['shopsystem']['version'] = $this->getModuleVersion();
+
         $postArray['basket'] = array();
 
         //Add order items to basket array
@@ -653,6 +657,25 @@ class Quickpay_Payment_Helper_Data extends Mage_Core_Helper_Abstract
         } else {
             return $countries[$code];
         }
+    }
+
+    /**
+     * @return string
+     */
+    public function getModuleVersion(){
+        $module = 'Quickpay_Payment';
+        $configFile = Mage::getConfig()->getModuleDir('etc', $module).DS.'config.xml';
+        $string = file_get_contents($configFile);
+        if($string){
+            $xml = simplexml_load_string($string, 'Varien_Simplexml_Element');
+            $json = json_encode($xml);
+            $data = json_decode($json,TRUE);
+
+            if(isset($data['modules'][$module]['version'])){
+                return $data['modules'][$module]['version'];
+            }
+        }
+        return '';
     }
 
 }
