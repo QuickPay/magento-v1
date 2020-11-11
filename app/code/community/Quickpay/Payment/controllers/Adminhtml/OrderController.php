@@ -1,6 +1,6 @@
 <?php
 
-class Quickpay_Payment_OrderController extends Mage_Adminhtml_Controller_Action
+class Quickpay_Payment_Adminhtml_OrderController extends Mage_Adminhtml_Controller_Action
 {
     public function indexAction()
     {

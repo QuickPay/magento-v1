@@ -106,6 +106,13 @@ class Quickpay_Payment_PaymentController extends Mage_Core_Controller_Front_Acti
 
             $operation = end($request->operations);
 
+            $autocapture = false;
+            foreach($request->operations as $operation){
+                if($operation->type == 'capture'){
+                    $autocapture = true;
+                }
+            }
+
             // Save the order into the quickpaypayment_order_status table
             // IMPORTANT to update the status as 1 to ensure that the stock is handled correctly!
             if ($request->accepted && $operation->type == 'authorize') {
@@ -205,7 +212,7 @@ class Quickpay_Payment_PaymentController extends Mage_Core_Controller_Front_Acti
                 Mage::helper('quickpaypayment')->createTransaction($order, $request->id, Mage_Sales_Model_Order_Payment_Transaction::TYPE_AUTH);
 
                 // CREATES INVOICE if payment instantcapture is ON
-                if ((int)$payment->getConfigData('instantcapture') == 1 && (int)$payment->getConfigData('instantinvoice') == 1) {
+                if (((int)$payment->getConfigData('instantcapture') == 1 && (int)$payment->getConfigData('instantinvoice') == 1) || $autocapture) {
                     if ($order->canInvoice()) {
                         $invoice = $order->prepareInvoice();
                         $invoice->setRequestedCaptureCase(Mage_Sales_Model_Order_Invoice::CAPTURE_ONLINE);
