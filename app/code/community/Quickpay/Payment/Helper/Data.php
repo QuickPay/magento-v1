@@ -143,11 +143,12 @@ class Quickpay_Payment_Helper_Data extends Mage_Core_Helper_Abstract
 
         //Add order items to basket array
         foreach ($order->getAllVisibleItems() as $item) {
+            $price = ($item->getBasePriceInclTax() - $item->getDiscountAmount()) * 100;
             $product = array(
                 'qty'        => (int) $item->getQtyOrdered(),
                 'item_no'    => $item->getSku(),
                 'item_name'  => $item->getName(),
-                'item_price' => (int) (($item->getBasePriceInclTax() - $item->getDiscountAmount()) * 100),
+                'item_price' => round($price),
                 'vat_rate'   => $item->getTaxPercent() / 100,
             );
 
@@ -192,11 +193,12 @@ class Quickpay_Payment_Helper_Data extends Mage_Core_Helper_Abstract
 
         //Add order items to basket array
         foreach ($order->getAllVisibleItems() as $item) {
+            $price = ($item->getBasePriceInclTax() - $item->getDiscountAmount()) * 100;
             $product = array(
                 'qty'        => (int) $item->getQtyOrdered(),
                 'item_no'    => $item->getSku(),
                 'item_name'  => $item->getName(),
-                'item_price' => (int) (($item->getBasePriceInclTax() - $item->getDiscountAmount()) * 100),
+                'item_price' => round($price),
                 'vat_rate'   => $item->getTaxPercent() / 100,
             );
 
