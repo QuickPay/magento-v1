@@ -106,7 +106,7 @@ class Quickpay_Payment_Helper_Data extends Mage_Core_Helper_Abstract
         $billingAddress = $order->getBillingAddress();
 
         //Add shipping_address
-        if ($shippingAddress) { 
+        if ($shippingAddress) {
             $postArray['shipping_address']['name'] = $shippingAddress->getName();
             $postArray['shipping_address']['street'] = $shippingAddress->getStreetFull();
             $postArray['shipping_address']['city'] = $shippingAddress->getCity();
@@ -143,17 +143,19 @@ class Quickpay_Payment_Helper_Data extends Mage_Core_Helper_Abstract
 
         //Add order items to basket array
         foreach ($order->getAllVisibleItems() as $item) {
-            $price = ($item->getBasePriceInclTax() - $item->getDiscountAmount()) * 100;
+            $price = round(($item->getBasePriceInclTax() - $item->getDiscountAmount()), 2) * 100;
             $product = array(
                 'qty'        => (int) $item->getQtyOrdered(),
                 'item_no'    => $item->getSku(),
                 'item_name'  => $item->getName(),
-                'item_price' => round($price),
+                'item_price' => strval($price),
                 'vat_rate'   => $item->getTaxPercent() / 100,
             );
 
             $postArray['basket'][] = $product;
         }
+
+        //2.15725
 
         //Send shipping amount
         $postArray['shipping']['method'] = 'pick_up_point';
@@ -193,12 +195,12 @@ class Quickpay_Payment_Helper_Data extends Mage_Core_Helper_Abstract
 
         //Add order items to basket array
         foreach ($order->getAllVisibleItems() as $item) {
-            $price = ($item->getBasePriceInclTax() - $item->getDiscountAmount()) * 100;
+            $price = round(($item->getBasePriceInclTax() - $item->getDiscountAmount()), 2) * 100;
             $product = array(
                 'qty'        => (int) $item->getQtyOrdered(),
                 'item_no'    => $item->getSku(),
                 'item_name'  => $item->getName(),
-                'item_price' => round($price),
+                'item_price' => strval($price),
                 'vat_rate'   => $item->getTaxPercent() / 100,
             );
 

@@ -122,15 +122,17 @@ abstract class Quickpay_Payment_Model_Method_Abstract extends Mage_Payment_Model
             'order_number' => $orderid[0],
         );
         $row = $read->fetchRow($query, $binds);
-        if ($row['cardtype'] == 'dankort') {
-            return true;
+        if(isset($row['cardtype'])) {
+            if ($row['cardtype'] == 'dankort') {
+                return true;
+            }
         }
 
         $controller = Mage::app()->getFrontController()->getAction();
         if($controller instanceof Mage_Adminhtml_Sales_Order_CreditmemoController) { // allow editing of qty in creditmemo
-                return true;
+            return true;
         } else if ($controller instanceof Mage_Adminhtml_Sales_Order_InvoiceController) { // allow editing of qty in invoice
-                return true;
+            return true;
         }
 
         return false;
@@ -229,7 +231,9 @@ abstract class Quickpay_Payment_Model_Method_Abstract extends Mage_Payment_Model
             );
             $row = $read->fetchRow($query, $binds);
 
-            return $this->getConfigData('title') . " - " . Mage::helper('quickpaypayment')->__('Maks beløb:') . " " . $row['amount'] / 100 . " " . $row['currency'];
+            if(isset($row['amount'])) {
+                return $this->getConfigData('title') . " - " . Mage::helper('quickpaypayment')->__('Maks beløb:') . " " . $row['amount'] / 100 . " " . $row['currency'];
+            }
         }
 
         return $this->getConfigData('title');

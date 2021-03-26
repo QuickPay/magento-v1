@@ -15,7 +15,7 @@ if (isset($quickpay_state[0]) && $quickpay_state[0] == 'checkbox1') {
 
 $parameters = array(
     "agreement_id"                 => $payment->getConfigData("agreementid"),
-    "amount"                       => $order->getTotalDue() * 100,
+    "amount"                       => strval(round($order->getTotalDue(), 2) * 100),
     "continueurl"                  => $this->getSuccessUrl(),
     "cancelurl"                    => $this->getCancelUrl(),
     "callbackurl"                  => $this->getCallbackUrl(),
