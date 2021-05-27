@@ -21,7 +21,7 @@
                             <show_in_store>1</show_in_store>
                         </version>
                         <active translate="label">
-                            <label>Aktiv</label>
+                            <label>Enabled</label>
                             <frontend_type>select</frontend_type>
                             <source_model>adminhtml/system_config_source_yesno</source_model>
                             <sort_order>5</sort_order>
@@ -30,7 +30,7 @@
                             <show_in_store>1</show_in_store>
                         </active>
                         <title translate="label">
-                            <label>Titel</label>
+                            <label>Title</label>
                             <frontend_type>text</frontend_type>
                             <sort_order>10</sort_order>
                             <show_in_default>1</show_in_default>
@@ -72,7 +72,7 @@
                             <show_in_store>1</show_in_store>
                         </testmode>
                         <order_status_after_payment translate="label">
-                            <label>Ny ordre status (Efter betaling er gennemført)</label>
+                            <label>New order status (After the payment is made)</label>
                             <frontend_type>select</frontend_type>
                             <source_model>adminhtml/system_config_source_order_status</source_model>
                             <sort_order>22</sort_order>
@@ -81,7 +81,7 @@
                             <show_in_store>1</show_in_store>
                         </order_status_after_payment>
                         <order_status translate="label">
-                            <label>Ny ordre status (Før betaling er gennemført)</label>
+                            <label>New order status (Before the payment is made)</label>
                             <frontend_type>select</frontend_type>
                             <source_model>adminhtml/system_config_source_order_status</source_model>
                             <sort_order>23</sort_order>
@@ -90,7 +90,7 @@
                             <show_in_store>1</show_in_store>
                         </order_status>
                         <allowspecific translate="label">
-                            <label>Betaling fra gældende lande</label>
+                            <label>Payment from applicable countries</label>
                             <frontend_type>allowspecific</frontend_type>
                             <sort_order>30</sort_order>
                             <source_model>adminhtml/system_config_source_payment_allspecificcountries</source_model>
@@ -116,7 +116,7 @@
                             <show_in_store>1</show_in_store>
                         </instructions>
                         <cardlogos translate="label">
-                            <label>Hvilke kortlogoer skal vises</label>
+                            <label>Which Card logos to show</label>
                             <frontend_type>multiselect</frontend_type>
                             <source_model>quickpaypayment/system_config_source_cardlogos</source_model>
                             <sort_order>82</sort_order>
@@ -136,7 +136,6 @@
                         <payment_method_specified translate="label comment">
                             <label>Payment Method</label>
                             <frontend_type>text</frontend_type>
-                            <comment>Type in the cards you wish to accept (comma separated). See the valid payment types here: <![CDATA[<a href="http://tech.quickpay.net/appendixes/payment-methods/" target="_blank" rel="noopener">http://tech.quickpay.net/appendixes/payment-methods/</a>]]></comment>
                             <sort_order>40</sort_order>
                             <show_in_default>1</show_in_default>
                             <show_in_website>1</show_in_website>
@@ -144,7 +143,7 @@
                             <depends><payment_method>specified</payment_method></depends>
                         </payment_method_specified>
                         <instantcapture translate="label">
-                            <label>Øjeblikkelig Hævning</label>
+                            <label>Instant capture</label>
                             <frontend_type>select</frontend_type>
                             <source_model>adminhtml/system_config_source_yesno</source_model>
                             <sort_order>70</sort_order>
@@ -153,8 +152,8 @@
                             <show_in_store>1</show_in_store>
                         </instantcapture>
                         <instantinvoice translate="label comment">
-                            <label>Øjeblikkelig fakturering</label>
-                            <comment>Opret faktura automatisk, hvis hævning sker øjeblikkeligt.</comment>
+                            <label>Instant invoice</label>
+                            <comment>Create the invoice automatically if payment is captured instantly.</comment>
                             <frontend_type>select</frontend_type>
                             <source_model>adminhtml/system_config_source_yesno</source_model>
                             <sort_order>72</sort_order>
@@ -163,8 +162,7 @@
                             <show_in_store>1</show_in_store>
                         </instantinvoice>
                         <sendmailorderconfirmation translate="label comment">
-                            <label>Send e-mail Ordrebekræftelse.</label>
-                            <comment>Aktivering af denne indstilling vil resultere i en email-bekræftelse sendes når betalingen er foretaget.</comment>
+                            <label>Send order confirmation via email</label>
                             <frontend_type>select</frontend_type>
                             <source_model>adminhtml/system_config_source_yesno</source_model>
                             <sort_order>75</sort_order>
@@ -173,8 +171,7 @@
                             <show_in_store>1</show_in_store>
                         </sendmailorderconfirmation>
                         <sendmailorderconfirmationbefore translate="label comment">
-                            <label>Send e-mail Ordrebekræftelse før.</label>
-                            <comment>Aktivering af denne indstilling vil resultere i en email-bekræftelse sendes før betalingen er foretaget.</comment>
+                            <label>Send order confirmation before the actual payment</label>
                             <frontend_type>select</frontend_type>
                             <source_model>adminhtml/system_config_source_yesno</source_model>
                             <sort_order>76</sort_order>
@@ -193,10 +190,8 @@
                             <show_in_store>1</show_in_store>
                         </text_on_statement>
                         <handlestock translate="label comment">
-                            <label>Håndtering af lager. Varene vil først trækkes fra lageret, når betalingen er gennemført.</label>
-                            <comment>OBS! Annullering af ikke betalte ordre, vil give falske lagerantal, med mindre Magento
-                            Lagermuligheden 'Sæt produktets status til 'på lager' når en ordre annulleres' er sat til 'Nej'
-                            </comment>
+                            <label>Handle stock. The quantity purchased in stock will at first be decremented as the payment is made.</label>
+                            <comment>IMPORTANT! Decrementing of stock on unpaid orders might end up setting wrong quantity for products. Please, make sure, that your Magento setting Set Items Status to be In Stock When Order is Cancelled is set correctly.</comment>
                             <frontend_type>select</frontend_type>
                             <source_model>adminhtml/system_config_source_yesno</source_model>
                             <sort_order>90</sort_order>
@@ -205,7 +200,7 @@
                             <show_in_store>1</show_in_store>
                         </handlestock>
                         <transactionfee translate="label">
-                            <label>Opkræv Transaktionsgebyr</label>
+                            <label>Charge Transaction fees</label>
                             <frontend_type>select</frontend_type>
                             <source_model>adminhtml/system_config_source_yesno</source_model>
                             <sort_order>100</sort_order>
@@ -214,7 +209,7 @@
                             <show_in_store>1</show_in_store>
                         </transactionfee>
                         <transactionfee_description translate="label">
-                            <label>Opkræv Transaktionsgebyr Tekst</label>
+                            <label>Charge Transaction Fee Text</label>
                             <frontend_type>textarea</frontend_type>
                             <sort_order>101</sort_order>
                             <show_in_default>1</show_in_default>
@@ -222,8 +217,8 @@
                             <show_in_store>1</show_in_store>
                         </transactionfee_description>
                         <specifytransactionfee translate="label comment">
-                            <label>Transaktionsgebyr Udspecificeret</label>
-                            <comment>Udspecificeres kun hvis transaktionsgebyr er slået til</comment>
+                            <label>Specified Transaction fees</label>
+                            <comment>Will only be specified if Transaction fees are enabled</comment>
                             <frontend_type>select</frontend_type>
                             <source_model>adminhtml/system_config_source_yesno</source_model>
                             <sort_order>102</sort_order>
@@ -286,7 +281,7 @@
                             <show_in_store>1</show_in_store>
                         </googleanalyticsclientid>
                         <sort_order translate="label">
-                            <label>Sorteringsrækkefølge</label>
+                            <label>Sort Order</label>
                             <frontend_type>text</frontend_type>
                             <sort_order>1000</sort_order>
                             <show_in_default>1</show_in_default>
@@ -322,7 +317,7 @@
                             <show_in_store>1</show_in_store>
                         </title>
                         <allowspecific translate="label">
-                            <label>Payment from Applicable Countries</label>
+                            <label>Payment from applicable countries</label>
                             <frontend_type>allowspecific</frontend_type>
                             <sort_order>30</sort_order>
                             <source_model>adminhtml/system_config_source_payment_allspecificcountries</source_model>
@@ -331,7 +326,7 @@
                             <show_in_store>0</show_in_store>
                         </allowspecific>
                         <specificcountry translate="label">
-                            <label>Payment from Specific Countries</label>
+                            <label>Payment from Specific countries</label>
                             <frontend_type>multiselect</frontend_type>
                             <sort_order>40</sort_order>
                             <source_model>adminhtml/system_config_source_country</source_model>
@@ -544,7 +539,7 @@
                             <show_in_store>1</show_in_store>
                         </instructions>
                         <allowspecific translate="label">
-                            <label>Payment from Applicable Countries</label>
+                            <label>Payment from applicable countries</label>
                             <frontend_type>allowspecific</frontend_type>
                             <sort_order>30</sort_order>
                             <source_model>adminhtml/system_config_source_payment_allspecificcountries</source_model>
@@ -553,7 +548,7 @@
                             <show_in_store>0</show_in_store>
                         </allowspecific>
                         <specificcountry translate="label">
-                            <label>Payment from Specific Countries</label>
+                            <label>Payment from Specific countries</label>
                             <frontend_type>multiselect</frontend_type>
                             <sort_order>40</sort_order>
                             <source_model>adminhtml/system_config_source_country</source_model>
@@ -599,7 +594,7 @@
                             <show_in_store>1</show_in_store>
                         </title>
                         <allowspecific translate="label">
-                            <label>Payment from Applicable Countries</label>
+                            <label>Payment from applicable countries</label>
                             <frontend_type>allowspecific</frontend_type>
                             <sort_order>30</sort_order>
                             <source_model>adminhtml/system_config_source_payment_allspecificcountries</source_model>
@@ -608,7 +603,7 @@
                             <show_in_store>0</show_in_store>
                         </allowspecific>
                         <specificcountry translate="label">
-                            <label>Payment from Specific Countries</label>
+                            <label>Payment from Specific countries</label>
                             <frontend_type>multiselect</frontend_type>
                             <sort_order>40</sort_order>
                             <source_model>adminhtml/system_config_source_country</source_model>
