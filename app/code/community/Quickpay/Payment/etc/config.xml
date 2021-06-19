@@ -2,7 +2,7 @@
 <config>
     <modules>
         <Quickpay_Payment>
-            <version>3.5.4</version>
+            <version>3.5.5</version>
         </Quickpay_Payment>
     </modules>
     <global>
@@ -230,6 +230,27 @@
                 <allowspecific>0</allowspecific>
                 <instructions>Pay with Klarna</instructions>
             </quickpay_klarna>
+            <quickpay_paypal>
+                <active>0</active>
+                <model>quickpaypayment/method_paypal</model>
+                <title>QuickPay Paypal</title>
+                <allowspecific>0</allowspecific>
+                <instructions>Pay with Paypal</instructions>
+            </quickpay_paypal>
+            <quickpay_anyday>
+                <active>0</active>
+                <model>quickpaypayment/method_anyday</model>
+                <title>QuickPay ANYDAY Split</title>
+                <allowspecific>0</allowspecific>
+                <instructions>Pay with ANYDAY Split</instructions>
+            </quickpay_anyday>
+            <quickpay_trustly>
+                <active>0</active>
+                <model>quickpaypayment/method_trustly</model>
+                <title>QuickPay Trustly</title>
+                <allowspecific>0</allowspecific>
+                <instructions>Pay with Trustly</instructions>
+            </quickpay_trustly>
         </payment>
         <carriers>
             <quickpay_mobilepay>
