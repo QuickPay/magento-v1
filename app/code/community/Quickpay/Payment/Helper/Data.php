@@ -528,7 +528,8 @@ class Quickpay_Payment_Helper_Data extends Mage_Core_Helper_Abstract
     public function createTransaction($order, $transactionId, $type)
     {
         $transaction = Mage::getModel('sales/order_payment_transaction');
-        $transaction->setOrderPaymentObject($order->getPayment());
+        $payment = $order->getPayment();
+        $transaction->setOrderPaymentObject($payment);
 
         if (! $transaction = $transaction->loadByTxnId($transactionId)) {
             $transaction = Mage::getModel('sales/order_payment_transaction');
@@ -540,6 +541,17 @@ class Quickpay_Payment_Helper_Data extends Mage_Core_Helper_Abstract
         } else {
             $transaction->setIsClosed(true);
         }
+
+        if($payment->getLastTransId()){
+            $parent_id = $payment->getLastTransId();
+        } else {
+            $parent_id = null;
+        }
+
+        $payment->setLastTransId($transactionId);
+        $payment->setTransactionId($transactionId);
+        $payment->setParentTransactionId($parent_id);
+        $payment->save();
 
         $transaction->setTxnId($transactionId);
         $transaction->setTxnType($type);
