@@ -102,60 +102,68 @@ class Quickpay_Payment_Helper_Data extends Mage_Core_Helper_Abstract
             $postArray['text_on_statement'] = $textOnStatement;
         }
 
-        $shippingAddress = $order->getShippingAddress();
-        $billingAddress = $order->getBillingAddress();
+        if($order->getPayment()->getMethod() != 'quickpay_paypal') {
+            $shippingAddress = $order->getShippingAddress();
+            $billingAddress = $order->getBillingAddress();
 
-        //Add shipping_address
-        if ($shippingAddress) {
-            $postArray['shipping_address']['name'] = $shippingAddress->getName();
-            $postArray['shipping_address']['street'] = $shippingAddress->getStreetFull();
-            $postArray['shipping_address']['city'] = $shippingAddress->getCity();
-            $postArray['shipping_address']['zip_code'] = $shippingAddress->getPostcode();
-            $postArray['shipping_address']['region'] = $shippingAddress->getRegion();
-            $postArray['shipping_address']['country_code'] = Mage::app()->getLocale()->getTranslation($shippingAddress->getCountryId(), 'Alpha3ToTerritory');
-            $postArray['shipping_address']['phone_number'] = $shippingAddress->getTelephone();
-            $postArray['shipping_address']['email'] = $shippingAddress->getEmail();
-            $postArray['shipping_address']['house_number'] = '';
-            $postArray['shipping_address']['house_extension'] = '';
-            $postArray['shipping_address']['mobile_number'] = '';
-        }
+            //Add shipping_address
+            if ($shippingAddress) {
+                $postArray['shipping_address']['name'] = $shippingAddress->getName();
+                $postArray['shipping_address']['street'] = $shippingAddress->getStreetFull();
+                $postArray['shipping_address']['city'] = $shippingAddress->getCity();
+                $postArray['shipping_address']['zip_code'] = $shippingAddress->getPostcode();
+                $postArray['shipping_address']['region'] = $shippingAddress->getRegion();
+                $postArray['shipping_address']['country_code'] = Mage::app()->getLocale()->getTranslation($shippingAddress->getCountryId(), 'Alpha3ToTerritory');
+                $postArray['shipping_address']['phone_number'] = $shippingAddress->getTelephone();
+                $postArray['shipping_address']['email'] = $shippingAddress->getEmail();
+                $postArray['shipping_address']['house_number'] = '';
+                $postArray['shipping_address']['house_extension'] = '';
+                $postArray['shipping_address']['mobile_number'] = '';
+            }
 
-        //Add billing_address
-        if ($billingAddress) {
-            $postArray['invoice_address']['name'] = $billingAddress->getName();
-            $postArray['invoice_address']['street'] = $billingAddress->getStreetFull();
-            $postArray['invoice_address']['city'] = $billingAddress->getCity();
-            $postArray['invoice_address']['zip_code'] = $billingAddress->getPostcode();
-            $postArray['invoice_address']['region'] = $billingAddress->getRegion();
-            $postArray['invoice_address']['country_code'] = Mage::app()->getLocale()->getTranslation($billingAddress->getCountryId(), 'Alpha3ToTerritory');
-            $postArray['invoice_address']['phone_number'] = $billingAddress->getTelephone();
-            $postArray['invoice_address']['email'] = $billingAddress->getEmail();
-            $postArray['invoice_address']['house_number'] = '';
-            $postArray['invoice_address']['house_extension'] = '';
-            $postArray['invoice_address']['mobile_number'] = '';
+            //Add billing_address
+            if ($billingAddress) {
+                $postArray['invoice_address']['name'] = $billingAddress->getName();
+                $postArray['invoice_address']['street'] = $billingAddress->getStreetFull();
+                $postArray['invoice_address']['city'] = $billingAddress->getCity();
+                $postArray['invoice_address']['zip_code'] = $billingAddress->getPostcode();
+                $postArray['invoice_address']['region'] = $billingAddress->getRegion();
+                $postArray['invoice_address']['country_code'] = Mage::app()->getLocale()->getTranslation($billingAddress->getCountryId(), 'Alpha3ToTerritory');
+                $postArray['invoice_address']['phone_number'] = $billingAddress->getTelephone();
+                $postArray['invoice_address']['email'] = $billingAddress->getEmail();
+                $postArray['invoice_address']['house_number'] = '';
+                $postArray['invoice_address']['house_extension'] = '';
+                $postArray['invoice_address']['mobile_number'] = '';
+            }
+
+            $postArray['basket'] = array();
+
+            //Add order items to basket array
+            foreach ($order->getAllVisibleItems() as $item) {
+                //echo "<pre>";
+                //print_r($item->getData()); die;
+                //echo $item->getBasePriceInclTax(); die;
+                $discount = 0;
+                if ($item->getDiscountAmount()) {
+                    $discount = $item->getDiscountAmount() / $item->getQtyOrdered();
+                }
+                $price = round($item->getBasePriceInclTax() - $discount, 2) * 100;
+                //$price = round($item->getBaseRowTotalInclTax() - $item->getDiscountAmount(), 2) * 100;
+                $product = array(
+                    'qty' => (int)$item->getQtyOrdered(),
+                    'item_no' => $item->getSku(),
+                    'item_name' => $item->getName(),
+                    'item_price' => strval($price),
+                    'vat_rate' => $item->getTaxPercent() / 100,
+                );
+
+                $postArray['basket'][] = $product;
+            }
         }
 
         $postArray['shopsystem'] = [];
         $postArray['shopsystem']['name'] = 'Magento 1';
         $postArray['shopsystem']['version'] = $this->getModuleVersion();
-
-        $postArray['basket'] = array();
-
-        //Add order items to basket array
-        foreach ($order->getAllVisibleItems() as $item) {
-            $price = round(($item->getBasePriceInclTax() - $item->getDiscountAmount()), 2) * 100;
-            $product = array(
-                'qty'        => (int) $item->getQtyOrdered(),
-                'item_no'    => $item->getSku(),
-                'item_name'  => $item->getName(),
-                'item_price' => strval($price),
-                'vat_rate'   => $item->getTaxPercent() / 100,
-            );
-
-            $postArray['basket'][] = $product;
-        }
-
-        //2.15725
 
         //Send shipping amount
         $postArray['shipping']['method'] = 'pick_up_point';
@@ -165,6 +173,7 @@ class Quickpay_Payment_Helper_Data extends Mage_Core_Helper_Abstract
         $this->apiKey = Mage::getStoreConfig('payment/quickpaypayment_payment/apikey', $storeId);
         $result = $this->request('payments', $postArray, '');
         $result = json_decode($result);
+
 
         return $result;
     }
