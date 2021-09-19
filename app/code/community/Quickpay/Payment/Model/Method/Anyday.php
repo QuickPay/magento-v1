@@ -6,6 +6,6 @@ class Quickpay_Payment_Model_Method_Anyday extends Quickpay_Payment_Model_Method
 
     public function getPaymentMethods()
     {
-        return 'anydaysplit';
+        return 'anyday-split';
     }
 }
