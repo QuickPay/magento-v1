@@ -159,15 +159,15 @@ class Quickpay_Payment_Helper_Data extends Mage_Core_Helper_Abstract
 
                 $postArray['basket'][] = $product;
             }
+
+            //Send shipping amount
+            $postArray['shipping']['method'] = 'pick_up_point';
+            $postArray['shipping']['amount'] = (int) ($order->getShippingInclTax() * 100);
         }
 
         $postArray['shopsystem'] = [];
         $postArray['shopsystem']['name'] = 'Magento 1';
         $postArray['shopsystem']['version'] = $this->getModuleVersion();
-
-        //Send shipping amount
-        $postArray['shipping']['method'] = 'pick_up_point';
-        $postArray['shipping']['amount'] = (int) ($order->getShippingInclTax() * 100);
 
         $storeId = Mage::app()->getStore()->getStoreId();
         $this->apiKey = Mage::getStoreConfig('payment/quickpaypayment_payment/apikey', $storeId);
