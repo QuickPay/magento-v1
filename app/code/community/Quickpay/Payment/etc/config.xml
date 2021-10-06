@@ -248,6 +248,7 @@
                 <active>0</active>
                 <model>quickpaypayment/method_trustly</model>
                 <title>QuickPay Trustly</title>
+                <autocapture>0</autocapture>
                 <allowspecific>0</allowspecific>
                 <instructions>Pay with Trustly</instructions>
             </quickpay_trustly>

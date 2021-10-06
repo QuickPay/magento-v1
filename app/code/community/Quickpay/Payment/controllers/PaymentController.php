@@ -107,9 +107,15 @@ class Quickpay_Payment_PaymentController extends Mage_Core_Controller_Front_Acti
             $operation = end($request->operations);
 
             $autocapture = false;
-            foreach($request->operations as $operation){
-                if($operation->type == 'capture'){
+            if($order->getPayment()->getMethodInstance()->getCode() == 'quickpay_trustly'){
+                if(Mage::getStoreConfig('payment/quickpay_trustly/autocapture')){
                     $autocapture = true;
+                }
+            } else {
+                foreach($request->operations as $operation){
+                    if($operation->type == 'capture'){
+                        $autocapture = true;
+                    }
                 }
             }
 
