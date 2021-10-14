@@ -123,6 +123,10 @@ class Quickpay_Payment_Helper_Data extends Mage_Core_Helper_Abstract
 
             //Add billing_address
             if ($billingAddress) {
+                $mobileNumber = '';
+                if($order->getPayment()->getMethod() == 'quickpay_mobilepay') {
+                    $mobileNumber = $billingAddress->getTelephone();
+                }
                 $postArray['invoice_address']['name'] = $billingAddress->getName();
                 $postArray['invoice_address']['street'] = $billingAddress->getStreetFull();
                 $postArray['invoice_address']['city'] = $billingAddress->getCity();
@@ -133,7 +137,7 @@ class Quickpay_Payment_Helper_Data extends Mage_Core_Helper_Abstract
                 $postArray['invoice_address']['email'] = $billingAddress->getEmail();
                 $postArray['invoice_address']['house_number'] = '';
                 $postArray['invoice_address']['house_extension'] = '';
-                $postArray['invoice_address']['mobile_number'] = '';
+                $postArray['invoice_address']['mobile_number'] = $mobileNumber;
             }
 
             $postArray['basket'] = array();
