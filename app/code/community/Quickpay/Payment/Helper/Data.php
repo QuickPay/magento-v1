@@ -124,7 +124,8 @@ class Quickpay_Payment_Helper_Data extends Mage_Core_Helper_Abstract
             //Add billing_address
             if ($billingAddress) {
                 $mobileNumber = '';
-                if($order->getPayment()->getMethod() == 'quickpay_mobilepay') {
+                if($order->getPayment()->getMethod() == 'quickpay_mobilepay'
+                    || $order->getPayment()->getMethod() == 'quickpaypayment_payment') {
                     $mobileNumber = $billingAddress->getTelephone();
                 }
                 $postArray['invoice_address']['name'] = $billingAddress->getName();
