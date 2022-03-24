@@ -2,7 +2,7 @@
 <config>
     <modules>
         <Quickpay_Payment>
-            <version>3.6.3</version>
+            <version>3.6.4</version>
         </Quickpay_Payment>
     </modules>
     <global>
@@ -252,6 +252,20 @@
                 <allowspecific>0</allowspecific>
                 <instructions>Pay with Trustly</instructions>
             </quickpay_trustly>
+            <quickpay_applepay>
+                <active>0</active>
+                <model>quickpaypayment/method_applepay</model>
+                <title>QuickPay ApplePay</title>
+                <allowspecific>0</allowspecific>
+                <instructions>Pay with ApplePay</instructions>
+            </quickpay_applepay>
+            <quickpay_googlepay>
+                <active>0</active>
+                <model>quickpaypayment/method_googlepay</model>
+                <title>QuickPay GooglePay</title>
+                <allowspecific>0</allowspecific>
+                <instructions>Pay with GooglePay</instructions>
+            </quickpay_googlepay>
         </payment>
         <carriers>
             <quickpay_mobilepay>
