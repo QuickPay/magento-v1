@@ -2,7 +2,7 @@
 <config>
     <modules>
         <Quickpay_Payment>
-            <version>3.6.4</version>
+            <version>3.6.5</version>
         </Quickpay_Payment>
     </modules>
     <global>
@@ -180,7 +180,7 @@
         <payment>
             <quickpaypayment_payment>
                 <model>quickpaypayment/method_quickpay</model>
-                <title>QuickPay Kortbetaling</title>
+                <title>Kortbetaling</title>
                 <active>1</active>
                 <testmode>0</testmode>
                 <order_status>pending</order_status>
@@ -202,19 +202,19 @@
             <quickpay_viabill>
                 <active>0</active>
                 <model>quickpaypayment/method_viabill</model>
-                <title>QuickPay ViaBill</title>
+                <title>ViaBill</title>
                 <allowspecific>0</allowspecific>
                 <instructions>Pay with ViaBill</instructions>
             </quickpay_viabill>
             <quickpay_mobilepay>
                 <active>0</active>
                 <model>quickpaypayment/method_mobilepay</model>
-                <title>QuickPay MobilePay</title>
+                <title>MobilePay</title>
                 <allowspecific>0</allowspecific>
             </quickpay_mobilepay>
             <quickpay_mobilepay_checkout>
                 <active>0</active>
-                <title>QuickPay MobilePay Checkout</title>
+                <title>MobilePay Checkout</title>
                 <instructions>Pay with MobilePay</instructions>
                 <shipping_store_pick_up_title>Hent i butikken</shipping_store_pick_up_title>
                 <shipping_home_delivery_title>Ordren leveres til din hjemmeadresse</shipping_home_delivery_title>
@@ -226,28 +226,28 @@
             <quickpay_klarna>
                 <active>0</active>
                 <model>quickpaypayment/method_klarna</model>
-                <title>QuickPay Klarna</title>
+                <title>Klarna</title>
                 <allowspecific>0</allowspecific>
                 <instructions>Pay with Klarna</instructions>
             </quickpay_klarna>
             <quickpay_paypal>
                 <active>0</active>
                 <model>quickpaypayment/method_paypal</model>
-                <title>QuickPay Paypal</title>
+                <title>PayPal</title>
                 <allowspecific>0</allowspecific>
                 <instructions>Pay with Paypal</instructions>
             </quickpay_paypal>
             <quickpay_anyday>
                 <active>0</active>
                 <model>quickpaypayment/method_anyday</model>
-                <title>QuickPay ANYDAY Split</title>
+                <title>ANYDAY Split</title>
                 <allowspecific>0</allowspecific>
                 <instructions>Pay with ANYDAY Split</instructions>
             </quickpay_anyday>
             <quickpay_trustly>
                 <active>0</active>
                 <model>quickpaypayment/method_trustly</model>
-                <title>QuickPay Trustly</title>
+                <title>Trustly</title>
                 <autocapture>0</autocapture>
                 <allowspecific>0</allowspecific>
                 <instructions>Pay with Trustly</instructions>
@@ -255,14 +255,14 @@
             <quickpay_applepay>
                 <active>0</active>
                 <model>quickpaypayment/method_applepay</model>
-                <title>QuickPay ApplePay</title>
+                <title>Apple Pay</title>
                 <allowspecific>0</allowspecific>
                 <instructions>Pay with ApplePay</instructions>
             </quickpay_applepay>
             <quickpay_googlepay>
                 <active>0</active>
                 <model>quickpaypayment/method_googlepay</model>
-                <title>QuickPay GooglePay</title>
+                <title>Google Pay</title>
                 <allowspecific>0</allowspecific>
                 <instructions>Pay with GooglePay</instructions>
             </quickpay_googlepay>

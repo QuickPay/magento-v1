@@ -17,6 +17,7 @@ class Quickpay_Payment_PaymentController extends Mage_Core_Controller_Front_Acti
     public function redirectAction()
     {
         $session = $this->_getSession();
+        $quoteId = $session->getQuoteId();
 
         $incrementId = $session->getLastRealOrderId();
 
@@ -26,6 +27,11 @@ class Quickpay_Payment_PaymentController extends Mage_Core_Controller_Front_Acti
 
         //Save quote id in session for retrieval later
         $session->setQuickpayQuoteId($session->getQuoteId());
+
+        if ($session->getQuoteId()) {
+            $quote = Mage::getModel('sales/quote')->load($quoteId);
+            $quote->setIsActive(true)->save();
+        }
 
         $block = Mage::getSingleton('core/layout')->createBlock('quickpaypayment/payment_redirect');
         $block->toHtml();
@@ -103,6 +109,12 @@ class Quickpay_Payment_PaymentController extends Mage_Core_Controller_Front_Acti
             Mage::log('Checksum ok', null, 'qp_callback.log');
 
             $order = Mage::getModel('sales/order')->loadByIncrementId((int)$request->order_id);
+
+            $quoteId = $order->getQuoteId();
+            if ($quoteId) {
+                $quote = Mage::getModel('sales/quote')->load($quoteId);
+                $quote->setIsActive(false)->save();
+            }
 
             $operation = end($request->operations);
 

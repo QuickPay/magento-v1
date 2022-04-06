@@ -41,7 +41,7 @@
             <action method="addCss" ifconfig="payment/quickpay_mobilepay/active">
                 <stylesheet>css/quickpaypayment/magnific-popup.css</stylesheet>
             </action>
-            <action method="addCss" ifconfig="payment/quickpay_mobilepay/active">
+            <action method="addCss">
                 <stylesheet>css/quickpaypayment/styles.css</stylesheet>
             </action>
             <action method="addItem" ifconfig="payment/quickpay_mobilepay/active"><type>skin_js</type><name>js/quickpaypayment/jquery.magnific-popup.min.js</name></action>
@@ -58,7 +58,7 @@
             <action method="addCss" ifconfig="payment/quickpay_mobilepay/active">
                 <stylesheet>css/quickpaypayment/magnific-popup.css</stylesheet>
             </action>
-            <action method="addCss" ifconfig="payment/quickpay_mobilepay/active">
+            <action method="addCss">
                 <stylesheet>css/quickpaypayment/styles.css</stylesheet>
             </action>
             <action method="addItem" ifconfig="payment/quickpay_mobilepay/active"><type>skin_js</type><name>js/quickpaypayment/jquery.magnific-popup.min.js</name></action>
