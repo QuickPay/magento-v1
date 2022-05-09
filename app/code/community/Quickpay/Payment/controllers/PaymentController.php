@@ -108,7 +108,7 @@ class Quickpay_Payment_PaymentController extends Mage_Core_Controller_Front_Acti
         if ($checksum == $_SERVER["HTTP_QUICKPAY_CHECKSUM_SHA256"]) {
             Mage::log('Checksum ok', null, 'qp_callback.log');
 
-            $order = Mage::getModel('sales/order')->loadByIncrementId((int)$request->order_id);
+            $order = Mage::getModel('sales/order')->loadByIncrementId($request->order_id);
 
             $quoteId = $order->getQuoteId();
             if ($quoteId) {
