@@ -37,12 +37,18 @@ class Quickpay_Payment_Block_Payment_Form extends Mage_Payment_Block_Form
     {
         $cardsConfig = Mage::getStoreConfig('payment/quickpaypayment_payment/cardlogos');
         $cards = explode(',', $cardsConfig);
+        $cardsSvg = ['maestro', 'mastercard', 'visa'];
 
         $html = '';
         if (count($cards) > 0) {
             $logoConfig = Mage::getModel('quickpaypayment/system_config_source_cardlogos');
             foreach ($cards as $card) {
-                $html .= sprintf('<img src="%s" height="20" alt="%s"/>', $this->getSkinUrl("images/quickpaypayment/{$card}.png"), $logoConfig->getFrontendLabel($card));
+                if(in_array($card, $cardsSvg)){
+                    $ext = 'svg';
+                } else {
+                    $ext = 'png';
+                }
+                $html .= sprintf('<img src="%s" height="20" alt="%s"/>', $this->getSkinUrl("images/quickpaypayment/{$card}.{$ext}"), $logoConfig->getFrontendLabel($card));
            }
         }
 

@@ -35,6 +35,6 @@ class Quickpay_Payment_Block_Payment_Form_Googlepay extends Mage_Payment_Block_F
      */
     public function getMethodLabelAfterHtml()
     {
-        return sprintf('<img src="%s" height="20" alt="GooglePay"/>', $this->getSkinUrl('images/quickpaypayment/googlepay.png'));
+        return sprintf('<img src="%s" height="20" alt="GooglePay"/>', $this->getSkinUrl('images/quickpaypayment/google-pay.svg'));
     }
 }

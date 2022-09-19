@@ -35,6 +35,6 @@ class Quickpay_Payment_Block_Payment_Form_Klarna extends Mage_Payment_Block_Form
      */
     public function getMethodLabelAfterHtml()
     {
-        return sprintf('<img src="%s" height="20" alt="Klarna"/>', $this->getSkinUrl('images/quickpaypayment/klarna.png'));
+        return sprintf('<img src="%s" height="20" alt="Klarna"/>', $this->getSkinUrl('images/quickpaypayment/klarna.svg'));
     }
 }

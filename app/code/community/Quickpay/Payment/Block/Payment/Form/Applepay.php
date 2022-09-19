@@ -35,6 +35,6 @@ class Quickpay_Payment_Block_Payment_Form_Applepay extends Mage_Payment_Block_Fo
      */
     public function getMethodLabelAfterHtml()
     {
-        return sprintf('<img src="%s" height="20" alt="ApplePay"/>', $this->getSkinUrl('images/quickpaypayment/applepay.png'));
+        return sprintf('<img src="%s" height="20" alt="ApplePay"/>', $this->getSkinUrl('images/quickpaypayment/apple-pay.svg'));
     }
 }
