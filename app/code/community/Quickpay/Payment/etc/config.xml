@@ -2,7 +2,7 @@
 <config>
     <modules>
         <Quickpay_Payment>
-            <version>3.6.7</version>
+            <version>3.6.8</version>
         </Quickpay_Payment>
     </modules>
     <global>
