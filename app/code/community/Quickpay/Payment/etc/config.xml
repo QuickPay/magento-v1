@@ -2,7 +2,7 @@
 <config>
     <modules>
         <Quickpay_Payment>
-            <version>3.6.8</version>
+            <version>3.6.9</version>
         </Quickpay_Payment>
     </modules>
     <global>
@@ -252,6 +252,13 @@
                 <allowspecific>0</allowspecific>
                 <instructions>Pay with Trustly</instructions>
             </quickpay_trustly>
+            <quickpay_vipps>
+                <active>0</active>
+                <model>quickpaypayment/method_vipps</model>
+                <title>Vipps</title>
+                <allowspecific>0</allowspecific>
+                <instructions>Pay with Vipps</instructions>
+            </quickpay_vipps>
             <quickpay_applepay>
                 <active>0</active>
                 <model>quickpaypayment/method_applepay</model>
