@@ -929,7 +929,7 @@
                         <min_order_total translate="label">
                             <label>Minimum Order Amount</label>
                             <validate>validate-number validate-zero-or-greater</validate>
-                            <comment>Minimum order amount for Anyday to be available</comment>
+                            <comment>Minimum order amount for ApplePay to be available</comment>
                             <frontend_type>text</frontend_type>
                             <sort_order>20</sort_order>
                             <show_in_default>1</show_in_default>
@@ -1001,7 +1001,7 @@
                         <min_order_total translate="label">
                             <label>Minimum Order Amount</label>
                             <validate>validate-number validate-zero-or-greater</validate>
-                            <comment>Minimum order amount for Anyday to be available</comment>
+                            <comment>Minimum order amount for GooglePay to be available</comment>
                             <frontend_type>text</frontend_type>
                             <sort_order>20</sort_order>
                             <show_in_default>1</show_in_default>
